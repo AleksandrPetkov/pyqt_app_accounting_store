@@ -1,0 +1,1 @@
+# pyqt_app_accounting_store
