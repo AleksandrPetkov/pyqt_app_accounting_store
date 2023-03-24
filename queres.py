@@ -41,7 +41,7 @@ DELETE_QUERES = {
 
 UPDATE_QUERES = {
     # 'update_sell': '''UPDATE goods SET sell = (?) WHERE good_id = (?)''',
-    # 'update_batch': '''UPDATE batch SET costs = (?) WHERE batch_id = (?)''',
+    'update_batch': '''UPDATE batch SET costs = costs - (?) WHERE batch_id = (?)''',
     # 'update_oth_cost': '''UPDATE other_costs SET cost_n = (?), costs = (?) WHERE costs_id = (?)''',
     'update_good': '''UPDATE goods SET good_n = (?), buy_price = (?), buy = (?), price = (?)
                   WHERE good_id=(?)'''
@@ -89,6 +89,7 @@ QUERY_PATHES = {
     'get_place_names': '''SELECT place_id FROM places''',
     'get_place_names_note': '''SELECT place_n FROM notes WHERE note_num = (?)''',
     'get_note_num': '''SELECT note_num FROM notes''',
+    'get_good_bp_bn': '''SELECT buy_price, batch_id, buy FROM goods WHERE good_id = (?)''',
 
 
     # 'total_income': '''SELECT sum(price * sell) FROM goods''',

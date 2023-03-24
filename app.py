@@ -263,10 +263,26 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
 
     def delete_good_func(self):
         title = 'товара'
-        quere_get = 'get_good_id'
-        quere_del = 'delete_good'
-        params = [title, quere_get, quere_del]
-        return self.delete_func(params)
+        quere_get = QUERY_PATHES['get_good_id']
+        note_id = self.get_data_list(quere_get)
+        input_dialog = SearchDialog(title, note_id)
+        rez = input_dialog.exec()
+        if rez:
+            art = input_dialog.line_add_batch.currentText()
+            quere_7 = QUERY_PATHES['get_good_bp_bn']
+            asdf = self.get_data_with_param(quere_7, art)[0]
+            b_price, b_id, b_num = asdf
+            upd_batch = int(b_price)*int(b_num)
+            quere_upd = UPDATE_QUERES['update_batch']
+            self.ins_del_upd_data(quere_upd, (upd_batch, b_id))
+            quere_4 = DELETE_QUERES['delete_good']
+            self.ins_del_upd_data(quere_4, (art,))
+            self.get_message(3)
+            return
+        if not rez:
+            self.get_message(1)
+            return
+
 
     def delete_oth_cost_func(self):
         title = 'прочих затрат'
