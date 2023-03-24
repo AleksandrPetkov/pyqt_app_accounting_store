@@ -7,8 +7,6 @@ CREATE_QUERES = {
                          batch_n text, costs integer DEFAULT 0)''',
     'create_table_oth_costs': '''CREATE TABLE IF NOT EXISTS other_costs (costs_id integer primary key,
                              cost_n text, costs integer DEFAULT 0)''',
-    # 'create_table_pre_sell': '''CREATE TABLE IF NOT EXISTS pre_sell (sell_id integer, good_id int, sell_price int,
-    #                             value int, discount int DEFAULT 0, place_id text)''',
     'create_table_income': '''CREATE TABLE IF NOT EXISTS income_table (income_id integer primary key, note_num integer,
                             good_id integer, income integer DEFAULT 0)''',
     'create_table_places': '''CREATE TABLE IF NOT EXISTS places (place_id text, place_n integer DEFAULT 0)''',
@@ -54,19 +52,21 @@ QUERY_PATHES = {
     'get_pre_sell': '''SELECT good_id, sell_price, value, discount FROM pre_sell WHERE note_num = (?)''',
     'pre_sell': '''SELECT pre_sell.note_num, pre_sell.good_id, pre_sell.value, pre_sell.discount, notes.place_n
                 FROM pre_sell, notes''',
-    'general_balance': '''SELECT goods.good_id, goods.good_n, goods.buy_price, goods.buy,
+    'general_balance': '''SELECT goods.good_id, goods.good_n, goods.buy_price, batch.batch_n, goods.buy,
                        goods.price, goods.sell, goods.balance FROM goods JOIN batch WHERE goods.batch_id=batch.batch_id
                        UNION
-                       SELECT 'Итого' AS good_id, '' AS good_n, '' AS buy_price, SUM(buy) AS buy, '' AS price,
+                       SELECT 'Итого' AS good_id, '' AS good_n, '' AS buy_price, '' AS batch_n, SUM(buy) AS buy, '' AS price,
                               SUM(sell) AS sell, SUM(balance) AS balance FROM goods ORDER BY good_id''',
     'other_costs': '''SELECT 'Итого' AS costs_id, '' AS cost_n,SUM(costs) AS costs FROM other_costs ORDER BY costs_id''',
     'batches': '''SELECT * FROM batch
                   UNION
                   SELECT 'Итого' AS batch_id, '' AS batch_n,SUM(costs) AS costs FROM batch ORDER BY batch_id''',
-    'batch_balance': '''SELECT good_id, good_n, buy_price, buy, price, sell, balance, pl_income FROM goods WHERE batch_id=(?)
+    'batch_balance': '''SELECT goods.good_id, goods.good_n, goods.buy_price, batch.batch_n, goods.buy,
+                        goods.price, goods.sell, goods.balance, goods.pl_income FROM goods 
+                        JOIN batch WHERE goods.batch_id=batch.batch_id AND goods.batch_id=(?)
                         UNION
-                        SELECT 'Итого' AS good_id, '' AS good_n, '' AS buy_price, SUM(buy) AS buy, '' AS price, 
-                        SUM(sell) AS sell, SUM(balance) AS balance, SUM(pl_income) AS pl_income
+                        SELECT 'Итого' AS good_id, '' AS good_n, '' AS buy_price, '' AS batch_id, SUM(buy) AS buy, ''
+                        AS price, SUM(sell) AS sell, SUM(balance) AS balance, SUM(pl_income) AS pl_income
                         FROM goods WHERE batch_id=(?) ORDER BY good_id ''',
     'plan_fin_res': '''SELECT good_id, good_n, buy, price, pl_income FROM goods WHERE batch_id=(?)
                        UNION

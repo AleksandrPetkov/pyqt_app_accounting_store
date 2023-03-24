@@ -1,7 +1,4 @@
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QDir, QFile, QIODevice
-from PyQt5.QtWidgets import QLineEdit, QDialog, QFormLayout, QDialogButtonBox, QVBoxLayout, QComboBox, QPushButton, \
-    QHBoxLayout, QFileDialog
+from PyQt5.QtWidgets import QLineEdit, QDialog, QFormLayout, QDialogButtonBox, QVBoxLayout, QComboBox
 
 from data_base import DB
 from queres import QUERY_PATHES
@@ -69,7 +66,7 @@ class AddSellDialog(BaseDialog):
         self.line_sell_place = QComboBox()
 
         path = QUERY_PATHES['get_place_names']
-        list_as = self.db.get_data(path)
+        list_as = self.db.get_data_list(path)
         for _ in list_as:
             self.line_sell_place.addItem(_)
 
@@ -90,9 +87,7 @@ class AddGoodDialog(BaseDialog):
         self.validator = int_valid()
         self.setWindowTitle('Добавление товара')
 
-
         self.line_add_name = QLineEdit()
-
         self.line_add_buy_price = QLineEdit()
         self.line_add_buy_price.setValidator(self.validator)
         self.line_add_batch = QComboBox()
@@ -102,7 +97,7 @@ class AddGoodDialog(BaseDialog):
         self.line_add_price.setValidator(self.validator)
 
         path = QUERY_PATHES['get_batch_names']
-        list_as = self.db.get_data(path)
+        list_as = self.db.get_data_list(path)
         for _ in list_as:
             self.line_add_batch.addItem(_)
 
@@ -111,7 +106,6 @@ class AddGoodDialog(BaseDialog):
         self.form_layout.addRow('Партия:', self.line_add_batch)
         self.form_layout.addRow('Количество:', self.line_add_number)
         self.form_layout.addRow('Цена продажи:', self.line_add_price)
-
 
         self.main_layout.addLayout(self.form_layout)
         self.main_layout.addWidget(self.button_box)
@@ -147,10 +141,9 @@ class EditGoodDialog(BaseDialog):
         self.line_add_batch = QLineEdit()
         self.line_add_number = QLineEdit()
         self.line_add_price = QLineEdit()
-        # self.line_add_sell = QLineEdit()
 
         query = QUERY_PATHES['get_current_good']
-        art, desc, b_price, batch, num, price = self.db.get_current_data_by_id(query, art) #, sell
+        art, desc, b_price, batch, num, price = self.db.get_data_with_param(query, art)[0]
         self.line_add_id.setText(str(art))
         self.line_add_id.setReadOnly(True)
         self.line_add_name.setText(str(desc))
@@ -162,8 +155,6 @@ class EditGoodDialog(BaseDialog):
         self.line_add_number.setValidator(self.validator)
         self.line_add_price.setText(str(price))
         self.line_add_price.setValidator(self.validator)
-        # self.line_add_sell.setText(str(sell))
-        # self.line_add_sell.setValidator(self.validator)
 
         self.form_layout.addRow('Артикул:', self.line_add_id)
         self.form_layout.addRow('Наименование:', self.line_add_name)
@@ -171,36 +162,7 @@ class EditGoodDialog(BaseDialog):
         self.form_layout.addRow('Партия:', self.line_add_batch)
         self.form_layout.addRow('Количество:', self.line_add_number)
         self.form_layout.addRow('Цена продажи:', self.line_add_price)
-        # self.form_layout.addRow('Продано:', self.line_add_sell)
 
         self.main_layout.addLayout(self.form_layout)
         self. main_layout.addWidget(self.button_box)
         self.setLayout(self.main_layout)
-
-
-# class EditSellBatch(BaseDialog):
-#     def __init__(self, title, func, oper=None):
-#         super().__init__()
-#         self.setWindowTitle(f'Изменение {title}')
-#         self.validator = int_valid()
-#         self.line_add_id = QLineEdit()
-#         self.line_add_name = QLineEdit()
-#         self.line_add_money = QLineEdit()
-#         self.operation = oper
-#
-#         art, desc, money = func
-#         self.line_add_id.setText(str(art))
-#         self.line_add_id.setReadOnly(True)
-#         self.line_add_name.setText(str(desc))
-#         if self.operation == 1:
-#             self.line_add_name.setReadOnly(True)
-#         self.line_add_money.setText(str(money))
-#         self.line_add_money.setValidator(self.validator)
-#
-#         self.form_layout.addRow('Артикул:', self.line_add_id)
-#         self.form_layout.addRow('Наименование:', self.line_add_name)
-#         self.form_layout.addRow('Количество/Сумма:', self.line_add_money)
-#
-#         self.main_layout.addLayout(self.form_layout)
-#         self.main_layout.addWidget(self.button_box)
-#         self.setLayout(self.main_layout)

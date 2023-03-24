@@ -44,6 +44,7 @@
     <addaction name="menu_3"/>
     <addaction name="fin_result"/>
     <addaction name="action_3"/>
+    <addaction name="show_batches_ta"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -205,6 +206,11 @@
   <action name="action_4">
    <property name="text">
     <string>Нулевые остатки</string>
+   </property>
+  </action>
+  <action name="show_batches_ta">
+   <property name="text">
+    <string>Партии</string>
    </property>
   </action>
  </widget>
