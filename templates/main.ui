@@ -35,23 +35,15 @@
     </property>
     <widget class="QMenu" name="menu_3">
      <property name="title">
-      <string>Остаток</string>
+      <string>Товар</string>
      </property>
      <addaction name="balance_by_bacth"/>
      <addaction name="all_balance"/>
     </widget>
-    <widget class="QMenu" name="menu_7">
-     <property name="title">
-      <string>Плановые показатели</string>
-     </property>
-     <addaction name="pl_fin_res_batch"/>
-    </widget>
-    <addaction name="show_nomenclature"/>
     <addaction name="show_othercosts"/>
     <addaction name="menu_3"/>
-    <addaction name="show_batches"/>
-    <addaction name="menu_7"/>
     <addaction name="fin_result"/>
+    <addaction name="action_3"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -60,16 +52,12 @@
     <addaction name="add_batch"/>
     <addaction name="add_good"/>
     <addaction name="add_other_costs"/>
-    <addaction name="add_sell"/>
    </widget>
    <widget class="QMenu" name="menu_5">
     <property name="title">
      <string>Редактировать</string>
     </property>
     <addaction name="change_good"/>
-    <addaction name="chanhe_oth_cost"/>
-    <addaction name="change_batch"/>
-    <addaction name="change_sell"/>
    </widget>
    <widget class="QMenu" name="menu_6">
     <property name="title">
@@ -78,11 +66,20 @@
     <addaction name="delete_good"/>
     <addaction name="delete_oth_cost"/>
     <addaction name="delete_sell"/>
+    <addaction name="action_4"/>
+   </widget>
+   <widget class="QMenu" name="menu_4">
+    <property name="title">
+     <string>Продажа</string>
+    </property>
+    <addaction name="action"/>
+    <addaction name="action_2"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
    <addaction name="menu_5"/>
    <addaction name="menu_6"/>
+   <addaction name="menu_4"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="show_nomenclature">
@@ -172,7 +169,7 @@
   </action>
   <action name="delete_sell">
    <property name="text">
-    <string>Продажа</string>
+    <string>Отправку</string>
    </property>
   </action>
   <action name="show_batches">
@@ -188,6 +185,26 @@
   <action name="fin_result">
    <property name="text">
     <string>Фин результат</string>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string>Добавить отправку</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="text">
+    <string>Подтвердить продажу</string>
+   </property>
+  </action>
+  <action name="action_3">
+   <property name="text">
+    <string>Отправки</string>
+   </property>
+  </action>
+  <action name="action_4">
+   <property name="text">
+    <string>Нулевые остатки</string>
    </property>
   </action>
  </widget>
