@@ -11,10 +11,10 @@ class DB:
         self.c.execute(CREATE_QUERES['create_table_batch'])
         self.c.execute(CREATE_QUERES['create_table_oth_costs'])
         self.c.execute(CREATE_QUERES['create_table_nomenclature'])
+        self.c.execute(CREATE_QUERES['create_table_dellivery_notes'])
         self.c.execute(CREATE_QUERES['create_table_pre_sell'])
         self.c.execute(CREATE_QUERES['create_table_income'])
         self.c.execute(CREATE_QUERES['create_table_places'])
-        self.c.execute(CREATE_QUERES['create_table_dellivery_notes'])
         self.conn.commit()
 
     def ins_del_upd_data(self, query, data):

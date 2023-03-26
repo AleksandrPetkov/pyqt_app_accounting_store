@@ -10,9 +10,9 @@ CREATE_QUERES = {
     'create_table_income': '''CREATE TABLE IF NOT EXISTS income_table (income_id integer primary key, note_num integer,
                             good_id integer, income integer DEFAULT 0)''',
     'create_table_places': '''CREATE TABLE IF NOT EXISTS places (place_id text, place_n integer DEFAULT 0)''',
-    'create_table_dellivery_notes': '''CREATE TABLE IF NOT EXISTS notes (note_num integer, place_n text)''',
-    'create_table_pre_sell': '''CREATE TABLE IF NOT EXISTS pre_sell (note_num integer, good_id int, sell_price int,
-                                value int, discount int DEFAULT 0, FOREIGN KEY (note_num) REFERENCES notes(note_num))''',
+    'create_table_dellivery_notes': '''CREATE TABLE IF NOT EXISTS notes (note_num integer primary key, place_n text)''', #, FOREIGN KEY (note_num) REFERENCES pre_sell(note_num)
+    'create_table_pre_sell': '''CREATE TABLE IF NOT EXISTS pre_sell (s_id int primary key, note_num integer, good_id int, sell_price int,
+                                value int, discount int DEFAULT 0, FOREIGN KEY (note_num) REFERENCES notes(note_num))''', #, FOREIGN KEY (note_num) REFERENCES notes(note_num)
 }
 
 ADD_QUERES = {
@@ -51,7 +51,7 @@ UPDATE_QUERES = {
 QUERY_PATHES = {
     'get_pre_sell': '''SELECT good_id, sell_price, value, discount FROM pre_sell WHERE note_num = (?)''',
     'pre_sell': '''SELECT pre_sell.note_num, pre_sell.good_id, pre_sell.value, pre_sell.discount, notes.place_n
-                FROM pre_sell, notes''',
+                FROM pre_sell, notes WHERE pre_sell.note_num = notes.note_num''',
     'general_balance': '''SELECT goods.good_id, goods.good_n, goods.buy_price, batch.batch_n, goods.buy,
                        goods.price, goods.sell, goods.balance FROM goods JOIN batch WHERE goods.batch_id=batch.batch_id
                        UNION
