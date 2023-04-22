@@ -1,4 +1,6 @@
-from PyQt5.QtWidgets import QLineEdit, QDialog, QFormLayout, QDialogButtonBox, QVBoxLayout, QComboBox
+import datetime
+
+from PyQt5.QtWidgets import QLineEdit, QDialog, QFormLayout, QDialogButtonBox, QVBoxLayout, QComboBox, QSpinBox, QDateEdit
 
 from data_base import DB
 from queres import QUERY_PATHES
@@ -24,17 +26,17 @@ class AddBatchOthercostsSellDialog(BaseDialog):
         self.validator = int_valid()
         self.title = title
         self.line_1 = line_1
-        if oper != 'add_batch':
+        if oper != 'add_batch' and oper != 'add_sell_place':
             self.line_2 = line_2
         self.setWindowTitle(self.title)
 
         self.line_add_name = QLineEdit()
-        if oper != 'add_batch':
+        if oper != 'add_batch' and oper != 'add_sell_place':
             self.line_add_money = QLineEdit()
             self.line_add_money.setValidator(self.validator)
 
         self.form_layout.addRow(self.line_1, self.line_add_name)
-        if oper != 'add_batch':
+        if oper != 'add_batch' and oper != 'add_sell_place':
             self.form_layout.addRow(self.line_2, self.line_add_money)
 
         self.main_layout.addLayout(self.form_layout)
@@ -47,34 +49,37 @@ class AddSellDialog(BaseDialog):
         super().__init__()
         self.validator = int_valid()
         self.title = 'Добавление продажи'
-        self.line_1 = '4 посл. цифры накладной'
-        self.line_2 = 'Артикул товара:'
-        self.line_3 = 'Количество:'
-        self.line_4 = 'Скидка:'
-        self.line_5 = 'Где продано:'
         self.setWindowTitle(self.title)
 
         self.line_add_num = QLineEdit()
         self.line_add_num.setValidator(self.validator)
         self.line_add_art = QLineEdit()
         self.line_add_art.setValidator(self.validator)
+        self.line_size = QComboBox()
+        size_list = ['0-1мес(56см)', '1-3мес(62см)', '3-6мес(68см)', '6-9мес(74см)', '9-12мес(80см)', '12-18мес(86см)',
+                     '18-24мес(92см)', '24-36мес(98см)']
+        for _ in size_list:
+            self.line_size.addItem(_)
         self.line_add_val = QLineEdit()
         self.line_add_val.setValidator(self.validator)
         self.line_discount = QLineEdit()
         self.line_discount.setText('0')
         self.line_discount.setValidator(self.validator)
         self.line_sell_place = QComboBox()
-
         path = QUERY_PATHES['get_place_names']
         list_as = self.db.get_data_list(path)
         for _ in list_as:
             self.line_sell_place.addItem(_)
+        now = datetime.datetime.now()
+        self.line_date = QDateEdit(now)
 
-        self.form_layout.addRow(self.line_1, self.line_add_num)
-        self.form_layout.addRow(self.line_2, self.line_add_art)
-        self.form_layout.addRow(self.line_3, self.line_add_val)
-        self.form_layout.addRow(self.line_4, self.line_discount)
-        self.form_layout.addRow(self.line_5, self.line_sell_place)
+        self.form_layout.addRow('4 посл. цифры накладной', self.line_add_num)
+        self.form_layout.addRow('Артикул товара:', self.line_add_art)
+        self.form_layout.addRow('Размер', self.line_size)
+        self.form_layout.addRow('Количество:', self.line_add_val)
+        self.form_layout.addRow('Скидка:', self.line_discount)
+        self.form_layout.addRow('Где продано:', self.line_sell_place)
+        self.form_layout.addRow('Дата продажи:', self.line_date)
 
         self.main_layout.addLayout(self.form_layout)
         self.main_layout.addWidget(self.button_box)
@@ -113,6 +118,41 @@ class AddGoodDialog(BaseDialog):
         self.setLayout(self.main_layout)
 
 
+class AddSizeDialog(BaseDialog):
+    def __init__(self):
+        super().__init__()
+        self.validator = int_valid()
+        self.title = 'Добавление размера'
+        self.setWindowTitle(self.title)
+
+        self.good_id = QComboBox()
+        list_as = self.db.get_good_id_name_list()
+        for _ in list_as:
+            self.good_id.addItem(_)
+        self.first_size = QSpinBox()
+        self.second_size = QSpinBox()
+        self.third_size = QSpinBox()
+        self.fourth_size = QSpinBox()
+        self.fifth_size = QSpinBox()
+        self.sixth_size = QSpinBox()
+        self.seventh_size = QSpinBox()
+        self.eighth_size = QSpinBox()
+
+        self.form_layout.addRow('Артикул товара', self.good_id)
+        self.form_layout.addRow('Кол-во 0-1мес(56см)', self.first_size)
+        self.form_layout.addRow('Кол-во 1-3мес(62см)', self.second_size)
+        self.form_layout.addRow('Кол-во 3-6мес(68см)', self.third_size)
+        self.form_layout.addRow('Кол-во 6-9мес(74см)', self.fourth_size)
+        self.form_layout.addRow('Кол-во 9-12мес(80см)', self.fifth_size)
+        self.form_layout.addRow('Кол-во 12-18мес(86см)', self.sixth_size)
+        self.form_layout.addRow('Кол-во 18-24мес(92см)', self.seventh_size)
+        self.form_layout.addRow('Кол-во 24-36мес(98см)', self.eighth_size)
+
+        self.main_layout.addLayout(self.form_layout)
+        self.main_layout.addWidget(self.button_box)
+        self.setLayout(self.main_layout)
+
+
 class SearchDialog(BaseDialog):
     def __init__(self, title, func):
         super().__init__()
@@ -124,6 +164,23 @@ class SearchDialog(BaseDialog):
             self.line_add_batch.addItem(str(_))
 
         self.form_layout.addRow('Артикул:', self.line_add_batch)
+
+        self.main_layout.addLayout(self.form_layout)
+        self.main_layout.addWidget(self.button_box)
+        self.setLayout(self.main_layout)
+
+
+class SearchDateDialog(BaseDialog):
+    def __init__(self, title):
+        super().__init__()
+        self.setWindowTitle(f'Поиск {title}')
+        past = datetime.datetime.now() - datetime.timedelta(days=7)
+        self.line_date_past = QDateEdit(past)
+        now = datetime.datetime.now()
+        self.line_date_now = QDateEdit(now)
+
+        self.form_layout.addRow('Начало периода:', self.line_date_past)
+        self.form_layout.addRow('Конец периода:', self.line_date_now)
 
         self.main_layout.addLayout(self.form_layout)
         self.main_layout.addWidget(self.button_box)

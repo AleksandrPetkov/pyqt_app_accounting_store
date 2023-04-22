@@ -1,10 +1,10 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 
-from add_dialoges import AddBatchOthercostsSellDialog, AddGoodDialog, EditGoodDialog,\
-    SearchDialog, AddSellDialog
+from dialoges import AddBatchOthercostsSellDialog, AddGoodDialog, EditGoodDialog, \
+    SearchDialog, AddSellDialog, AddSizeDialog, SearchDateDialog
 from data_base import DB
-from templates.main_win_table import MainWinTableTemplate
+from main_win_table import MainWinTableTemplate
 from queres import QUERY_PATHES, ADD_QUERES, UPDATE_QUERES, DELETE_QUERES
 
 
@@ -17,6 +17,8 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         self.add_good.triggered.connect(self.add_good_func)
         self.action.triggered.connect(self.add_pre_sell_func)
         self.action_2.triggered.connect(self.submit_sell_func)
+        self.add_size.triggered.connect(self.add_size_func)
+        self.add_sell_pl.triggered.connect(self.add_sell_place)
 
         self.show_othercosts.triggered.connect(self.show_other_costs_table)
         self.balance_by_bacth.triggered.connect(self.show_goods_bybatch_table)
@@ -24,6 +26,9 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         self.fin_result.triggered.connect(self.show_profit_table)
         self.action_3.triggered.connect(self.show_pre_sell_table)
         self.show_batches_ta.triggered.connect(self.show_batches_table)
+        self.order_place.triggered.connect(self.show_places_table)
+        self.size_by_cloth.triggered.connect(self.show_size_by_id_table)
+        self.fin_res_by_order.triggered.connect(self.show_profit_by_order)
 
         self.change_good.triggered.connect(self.edit_good)
 
@@ -90,25 +95,36 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         if not rez:
             self.get_message(1)
             return
-        num = input_dialog.line_add_num.text()
-        art = input_dialog.line_add_art.text()
-        sell_p = self.get_data_with_param(QUERY_PATHES['get_current_good'], art)[0][5]
-        # sell_p = self.get_current_data_by_id(QUERY_PATHES['get_current_good'], art)[5]
-        val = input_dialog.line_add_val.text()
-        discount = input_dialog.line_discount.text()
-        place_id = input_dialog.line_sell_place.currentText()
-        if not num or not art or not val:
-            self.get_message(2)
-            self.add_pre_sell_func()
-            return
         if rez:
+            num = input_dialog.line_add_num.text()
+            art = input_dialog.line_add_art.text()
+            size = input_dialog.line_size.currentText()
+            sell_p = self.get_data_with_param(QUERY_PATHES['get_current_good'], art)[0][5]
+            val = input_dialog.line_add_val.text()
+            discount = input_dialog.line_discount.text()
+            place_id = input_dialog.line_sell_place.currentText()
+            date = input_dialog.line_date.date().toPyDate()
+
+            if not num or not art or not val:
+                self.get_message(2)
+                self.add_pre_sell_func()
+                return
+
             func = self.get_data_list(QUERY_PATHES['get_note_num'])
+            size_dict = {'0-1мес(56см)': 'update_first_sell', '1-3мес(62см)': 'update_second_sell',
+                         '3-6мес(68см)': 'update_third_sell', '6-9мес(74см)': 'update_fourth_sell',
+                         '9-12мес(80см)': 'update_fifth_sell', '12-18мес(86см)': 'update_sixth_sell',
+                         '18-24мес(92см)': 'update_seventh_sell', '24-36мес(98см)': 'update_eighth_sell'}
+            size_query = UPDATE_QUERES[size_dict[size]]
+            query_data = (int(val), art)
+            self.ins_del_upd_data(size_query, query_data)
+
             if int(num) not in func:
                 query_1 = ADD_QUERES['add_deliv_note']
                 data_1 = (num, place_id)
                 self.ins_del_upd_data(query_1, data_1)
             query = ADD_QUERES['add_pre_sell']
-            data = (num, art, sell_p, val, discount)
+            data = (num, art, sell_p, val, discount, size, date)
             self.ins_del_upd_data(query, data)
             self.get_message(3)
             return
@@ -133,12 +149,60 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
             query = ADD_QUERES['add_good']
             data = (name, buy_price, batch, number, price)
             self.ins_del_upd_data(query, data)
+
             query_2 = QUERY_PATHES['get_buy_price']
             last_ins_id = self.get_data_without_param(query_2)[0][0]
             costs = int(buy_price) * int(number)
             data_list = (costs, last_ins_id)
             query_3 = ADD_QUERES['add_batch_cost']
             self.ins_del_upd_data(query_3, data_list)
+
+            last_ins_good_id = self.get_data_without_param(QUERY_PATHES['get_last_good_id'])[0][0]
+            query_4 = ADD_QUERES['add_good_to_size']
+            data_list_2 = (last_ins_good_id, name)
+            self.ins_del_upd_data(query_4, data_list_2)
+
+            self.get_message(3)
+            return
+
+    def add_size_func(self):
+        input_dialog = AddSizeDialog()
+        rez = input_dialog.exec()
+        if not rez:
+            self.get_message(1)
+            return
+        if rez:
+            good_id = input_dialog.good_id.currentText().split()[0]
+            first = input_dialog.first_size.text()
+            second = input_dialog.second_size.text()
+            third = input_dialog.third_size.text()
+            fourth = input_dialog.fourth_size.text()
+            fifth = input_dialog.fifth_size.text()
+            sixth = input_dialog.sixth_size.text()
+            seventh = input_dialog.seventh_size.text()
+            eighth = input_dialog.eighth_size.text()
+
+            query = ADD_QUERES['add_size']
+            data = (first, second, third, fourth, fifth, sixth,
+                    seventh, eighth, good_id)
+            self.ins_del_upd_data(query, data)
+            self.get_message(3)
+            return
+
+    def add_sell_place(self):
+        title = 'Добавление места продажи'
+        line_1 = 'Наименование:'
+        oper = 'add_sell_place'
+        input_dialog = AddBatchOthercostsSellDialog(title, line_1, None, oper)
+        rez = input_dialog.exec()
+        if not rez:
+            self.get_message(1)
+            return
+        if rez:
+            place_name = input_dialog.line_add_name.text()
+            query = ADD_QUERES['add_sell_place']
+            data = (place_name,)
+            self.ins_del_upd_data(query, data)
             self.get_message(3)
             return
 
@@ -156,12 +220,14 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
             sell_id = input_dialog.line_add_batch.currentText()
             pre_sells = self.get_data_with_param(quere, sell_id)
             for elem in pre_sells:
-                good_id, sell_price, sell, discount = elem
+                good_id, sell_price, value, discount, size, date = elem
                 quere_1 = ADD_QUERES['add_sell']
-                self.ins_del_upd_data(quere_1, (sell, good_id))
-                income = int(sell_price) * int(sell) - int(discount)
+                self.ins_del_upd_data(quere_1, (value, good_id))
+
+                good_n, buy_price = self.get_data_with_param(QUERY_PATHES['get_good_n_buy_p'], good_id)[0]
+                data_income = (sell_id, good_id, good_n, size, buy_price, sell_price, value, discount, date)
                 quere_2 = ADD_QUERES['add_income']
-                self.ins_del_upd_data(quere_2, (sell_id, good_id, income))
+                self.ins_del_upd_data(quere_2, data_income)
             quere_3 = ADD_QUERES['add_place_stat']
             place_n = self.get_data_with_param(QUERY_PATHES['get_place_names_note'], sell_id)[0][0]
             self.ins_del_upd_data(quere_3, (1, place_n))
@@ -177,7 +243,9 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
 
     def show_goods_table(self):
         query_path = QUERY_PATHES['general_balance']
-        self.get_all_table(query_path)
+        header_list = ['Артикул', 'Наименование', 'Цена закупки', 'Партия',
+                       'Закуплено единиц', 'Продажная цена', 'Продажи', 'Остаток']
+        self.get_noneditable_table(query_path, header_list)
 
     def show_goods_bybatch_table(self):
         title = 'партии'
@@ -187,9 +255,11 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         rez = input_dialog.exec()
         if rez:
             quere_b_id = QUERY_PATHES['get_batch_id_by_name']
-            val = self.get_data_with_param(quere_b_id, input_dialog.line_add_batch.currentText())[0][0]
+            data = self.get_data_with_param(quere_b_id, input_dialog.line_add_batch.currentText())[0][0]
             query_path = QUERY_PATHES['batch_balance']
-            self.get_all_table(query_path, 'good_by_batch', val)
+            header_list = ['Артикул', 'Наименование', 'Цена закупки', 'Партия',
+                           'Закуплено единиц', 'Продажная цена', 'Продажи', 'Остаток', 'Плановый доход']
+            self.get_noneditable_table(query_path, header_list, data, 'good_by_batch')
 
     def show_batches_table(self):
         self.get_editable_table([1], 'batch', '0', 'delete_batch_sum')
@@ -202,18 +272,49 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         self.ins_del_upd_data(del_query_2, (name,))
         self.get_profit_table()
 
+    def show_profit_by_order(self):
+        title = 'по дате'
+        input_dialog = SearchDateDialog(title)
+        input_dialog.exec()
+        past_date = input_dialog.line_date_past.date().toPyDate().isoformat()
+        now_date = input_dialog.line_date_now.date().toPyDate().isoformat()
+        data = (past_date, now_date)
+        query = QUERY_PATHES['get_income_by_date']
+        header_list = ['№ накладной', 'Артикул', 'Наименование', 'Размер', 'Цена закупки', 'Цена продажи',
+                       'Продано ед.', 'Скидка', 'Прибыль', 'Дата']
+        oper = 'show_profit_by_order'
+        self.get_noneditable_table(query, header_list, data, oper)
+
     def show_pre_sell_table(self):
         query_path = QUERY_PATHES['pre_sell']
-        self.get_all_table(query_path, 'pre_sell')
+        header_list = ['4 цифры накладной', 'Артикул товара',
+                       'Количество проданного', 'Скидка', 'Место продажи']
+        self.get_noneditable_table(query_path, header_list)
+
+    def show_places_table(self):
+        query_path = QUERY_PATHES['get_places']
+        header_list = ['Наименование', 'Количество заказов']
+        self.get_noneditable_table(query_path, header_list)
+
+    def show_size_by_id_table(self):
+        title = 'товара'
+        func = self.get_good_id_name_list()
+        input_dialog = SearchDialog(title, func)
+        input_dialog.exec()
+        art = input_dialog.line_add_batch.currentText().split()[0]
+        query = QUERY_PATHES['get_size_by_good']
+        header_list = ['Артикул', 'Наименование', '0-1мес(56см)', '1-3мес(62см)', '3-6мес(68см)', '6-9мес(74см)',
+                       '9-12мес(80см)', '12-18мес(86см)', '18-24мес(92см)', '24-36мес(98см)']
+        oper = 'show_size'
+        self.get_noneditable_table(query, header_list, art, oper)
 
     def edit_good(self):
         title = 'товара'
-        path_id = QUERY_PATHES['get_good_id']
-        func = self.get_data_list(path_id)
+        func = self.get_good_id_name_list()
         input_dialog = SearchDialog(title, func)
         rez = input_dialog.exec()
         if rez:
-            art = input_dialog.line_add_batch.currentText()
+            art = input_dialog.line_add_batch.currentText().split()[0]
             edit_dialog = EditGoodDialog(art)
             rez = edit_dialog.exec()
             if not rez:
@@ -221,7 +322,6 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
                 return
             if rez:
                 query_b = QUERY_PATHES['get_current_good']
-                # old_b_price, batch_n, old_b_num = self.get_current_data_by_id(query_b, art)[2:5]
                 old_b_price, batch_n, old_b_num = self.get_data_with_param(query_b, art)[0][2:5]
                 path = UPDATE_QUERES['update_good']
                 art_1 = edit_dialog.line_add_id.text()
@@ -263,12 +363,11 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
 
     def delete_good_func(self):
         title = 'товара'
-        quere_get = QUERY_PATHES['get_good_id']
-        note_id = self.get_data_list(quere_get)
-        input_dialog = SearchDialog(title, note_id)
+        func = self.get_good_id_name_list()
+        input_dialog = SearchDialog(title, func)
         rez = input_dialog.exec()
         if rez:
-            art = input_dialog.line_add_batch.currentText()
+            art = input_dialog.line_add_batch.currentText().split()[0]
             quere_7 = QUERY_PATHES['get_good_bp_bn']
             asdf = self.get_data_with_param(quere_7, art)[0]
             b_price, b_id, b_num = asdf
@@ -282,7 +381,6 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         if not rez:
             self.get_message(1)
             return
-
 
     def delete_oth_cost_func(self):
         title = 'прочих затрат'
@@ -304,6 +402,18 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         rez = input_dialog.exec()
         if rez:
             art = input_dialog.line_add_batch.currentText()
+            size_info = self.get_data_with_param(QUERY_PATHES['get_size_info'], art)
+
+            size_dict = {'0-1мес(56см)': 'update_first_dellsell', '1-3мес(62см)': 'update_second_dellsell',
+                         '3-6мес(68см)': 'update_third_dellsell', '6-9мес(74см)': 'update_fourth_dellsell',
+                         '9-12мес(80см)': 'update_fifth_dellsell', '12-18мес(86см)': 'update_sixth_dellsell',
+                         '18-24мес(92см)': 'update_seventh_dellsell', '24-36мес(98см)': 'update_eighth_dellsell'}
+            for elem in size_info:
+                good_id, value, size = elem
+                size_query = UPDATE_QUERES[size_dict[size]]
+                query_data = (int(value), good_id)
+                self.ins_del_upd_data(size_query, query_data)
+
             quere_4 = DELETE_QUERES['delete_pre_sell']
             self.ins_del_upd_data(quere_4, (art,))
             quere_5 = DELETE_QUERES['delete_note']

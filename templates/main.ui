@@ -39,12 +39,15 @@
      </property>
      <addaction name="balance_by_bacth"/>
      <addaction name="all_balance"/>
+     <addaction name="size_by_cloth"/>
     </widget>
     <addaction name="show_othercosts"/>
     <addaction name="menu_3"/>
     <addaction name="fin_result"/>
     <addaction name="action_3"/>
     <addaction name="show_batches_ta"/>
+    <addaction name="order_place"/>
+    <addaction name="fin_res_by_order"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -53,6 +56,8 @@
     <addaction name="add_batch"/>
     <addaction name="add_good"/>
     <addaction name="add_other_costs"/>
+    <addaction name="add_size"/>
+    <addaction name="add_sell_pl"/>
    </widget>
    <widget class="QMenu" name="menu_5">
     <property name="title">
@@ -185,7 +190,7 @@
   </action>
   <action name="fin_result">
    <property name="text">
-    <string>Фин результат</string>
+    <string>Фин результат общий</string>
    </property>
   </action>
   <action name="action">
@@ -211,6 +216,31 @@
   <action name="show_batches_ta">
    <property name="text">
     <string>Партии</string>
+   </property>
+  </action>
+  <action name="order_place">
+   <property name="text">
+    <string>Места заказа</string>
+   </property>
+  </action>
+  <action name="fin_res_by_order">
+   <property name="text">
+    <string>Фин результат по заказам</string>
+   </property>
+  </action>
+  <action name="add_size">
+   <property name="text">
+    <string>Размер</string>
+   </property>
+  </action>
+  <action name="size_by_cloth">
+   <property name="text">
+    <string>Размеры по товару</string>
+   </property>
+  </action>
+  <action name="add_sell_pl">
+   <property name="text">
+    <string>Место продажи</string>
    </property>
   </action>
  </widget>

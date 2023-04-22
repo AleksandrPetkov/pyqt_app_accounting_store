@@ -11,8 +11,9 @@ class DB:
         self.c.execute(CREATE_QUERES['create_table_batch'])
         self.c.execute(CREATE_QUERES['create_table_oth_costs'])
         self.c.execute(CREATE_QUERES['create_table_nomenclature'])
-        self.c.execute(CREATE_QUERES['create_table_dellivery_notes'])
+        self.c.execute(CREATE_QUERES['create_size_table'])
         self.c.execute(CREATE_QUERES['create_table_pre_sell'])
+        self.c.execute(CREATE_QUERES['create_table_dellivery_notes'])
         self.c.execute(CREATE_QUERES['create_table_income'])
         self.c.execute(CREATE_QUERES['create_table_places'])
         self.conn.commit()
@@ -46,3 +47,13 @@ class DB:
     def get_sum_oth_costs(self):
         result = self.get_data_without_param(QUERY_PATHES['get_tot_oth_costs'])
         return result
+
+    def get_good_id_name_list(self):
+        good_id = self.get_data_without_param(QUERY_PATHES['get_good_id'])[0]
+        good_name = self.get_data_without_param(QUERY_PATHES['get_good_name'])[0]
+        result = []
+        for g_id, name in zip(good_id, good_name):
+            elem = f'{g_id} ({name})'
+            result.append(elem)
+        return result
+

@@ -29,8 +29,9 @@ class MainWinTableTemplate(main_win_template.Ui_MainWindow):
     def get_editable_table(self, column, table, oper, del_val=None):
         name = 'Cумма'
 
-        del_query = DELETE_QUERES[del_val]
-        DB().ins_del_upd_data(del_query, (name,))
+        if del_val:
+            del_query = DELETE_QUERES[del_val]
+            DB().ins_del_upd_data(del_query, (name,))
 
         t_model = CTM(column)
         t_model.setTable(table)
@@ -53,35 +54,23 @@ class MainWinTableTemplate(main_win_template.Ui_MainWindow):
         self.tableView.setModel(t_model)
         self.tableView.resizeColumnsToContents()
 
-    def get_all_table(self, query_path, oper=None, val=None):
+    def get_noneditable_table(self, query_path, header_list, data=None, oper=None):
         self.db_1.open()
         query = QtSql.QSqlQuery(self.db_1)
         query.prepare(query_path)
+        if oper == 'show_size':
+            query.bindValue(0, data)
+        if oper == 'show_profit_by_order':
+            query.bindValue(0, data[0])
+            query.bindValue(1, data[1])
         if oper == 'good_by_batch':
-            query.bindValue(0, val)
-            query.bindValue(1, val)
-
+            query.bindValue(0, data)
+            query.bindValue(1, data)
         query.exec_()
         table_model = QtSql.QSqlQueryModel()
         table_model.setQuery(query)
-        table_model.setHeaderData(0, Qt.Horizontal, 'Артикул')
-        table_model.setHeaderData(1, Qt.Horizontal, 'Наименование')
-        table_model.setHeaderData(2, Qt.Horizontal, 'Цена закупки')
-        table_model.setHeaderData(3, Qt.Horizontal, 'Партия')
-        table_model.setHeaderData(4, Qt.Horizontal, 'Закуплено единиц')
-        table_model.setHeaderData(5, Qt.Horizontal, 'Продажная цена')
-        table_model.setHeaderData(6, Qt.Horizontal, 'Продажи')
-        table_model.setHeaderData(7, Qt.Horizontal, 'Остаток')
-
-        if oper == 'good_by_batch':
-            table_model.setHeaderData(8, Qt.Horizontal, 'Плановый доход')
-        if oper == 'pre_sell':
-            table_model.setHeaderData(0, Qt.Horizontal, '4 цифры накладной')
-            table_model.setHeaderData(1, Qt.Horizontal, 'Артикул товара')
-            table_model.setHeaderData(2, Qt.Horizontal, 'Количество проданного')
-            table_model.setHeaderData(3, Qt.Horizontal, 'Скидка')
-            table_model.setHeaderData(4, Qt.Horizontal, 'Место продажи')
-
+        for num, header in zip(range(len(header_list)), header_list):
+            table_model.setHeaderData(num, Qt.Horizontal, header)
         self.tableView.setModel(table_model)
         self.tableView.resizeColumnsToContents()
         self.db_1.close()
