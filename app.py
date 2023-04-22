@@ -44,6 +44,9 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
             return QMessageBox.information(self, 'Внимание', 'Заполните пожалуйста все поля.')
         if oper == 3:
             return QMessageBox.information(self, 'Отлично', 'Операция успешна!')
+        if oper == 4:
+            return QMessageBox.information(self, 'Внимание', 'Недостаточно товара этого размера!')
+
 
     def add_batch_func(self):
         title = 'Добавление партии'
@@ -109,25 +112,34 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
                 self.get_message(2)
                 self.add_pre_sell_func()
                 return
+            size_dict_2 = {'0-1мес(56см)': 'get_first', '1-3мес(62см)': 'get_second',
+                         '3-6мес(68см)': 'get_third', '6-9мес(74см)': 'get_fourth',
+                         '9-12мес(80см)': 'get_fifth', '12-18мес(86см)': 'get_sixth',
+                         '18-24мес(92см)': 'get_seventh', '24-36мес(98см)': 'get_eighth'}
+            size_balance = self.get_data_with_param(QUERY_PATHES[size_dict_2[size]], art)[0][0]
+            if size_balance >= int(val):
+                func = self.get_data_list(QUERY_PATHES['get_note_num'])
+                size_dict = {'0-1мес(56см)': 'update_first_sell', '1-3мес(62см)': 'update_second_sell',
+                             '3-6мес(68см)': 'update_third_sell', '6-9мес(74см)': 'update_fourth_sell',
+                             '9-12мес(80см)': 'update_fifth_sell', '12-18мес(86см)': 'update_sixth_sell',
+                             '18-24мес(92см)': 'update_seventh_sell', '24-36мес(98см)': 'update_eighth_sell'}
+                size_query = UPDATE_QUERES[size_dict[size]]
+                query_data = (int(val), art)
+                self.ins_del_upd_data(size_query, query_data)
 
-            func = self.get_data_list(QUERY_PATHES['get_note_num'])
-            size_dict = {'0-1мес(56см)': 'update_first_sell', '1-3мес(62см)': 'update_second_sell',
-                         '3-6мес(68см)': 'update_third_sell', '6-9мес(74см)': 'update_fourth_sell',
-                         '9-12мес(80см)': 'update_fifth_sell', '12-18мес(86см)': 'update_sixth_sell',
-                         '18-24мес(92см)': 'update_seventh_sell', '24-36мес(98см)': 'update_eighth_sell'}
-            size_query = UPDATE_QUERES[size_dict[size]]
-            query_data = (int(val), art)
-            self.ins_del_upd_data(size_query, query_data)
-
-            if int(num) not in func:
-                query_1 = ADD_QUERES['add_deliv_note']
-                data_1 = (num, place_id)
-                self.ins_del_upd_data(query_1, data_1)
-            query = ADD_QUERES['add_pre_sell']
-            data = (num, art, sell_p, val, discount, size, date)
-            self.ins_del_upd_data(query, data)
-            self.get_message(3)
-            return
+                if int(num) not in func:
+                    query_1 = ADD_QUERES['add_deliv_note']
+                    data_1 = (num, place_id)
+                    self.ins_del_upd_data(query_1, data_1)
+                query = ADD_QUERES['add_pre_sell']
+                data = (num, art, sell_p, val, discount, size, date)
+                self.ins_del_upd_data(query, data)
+                self.get_message(3)
+                return
+            else:
+                self.get_message(4)
+                self.add_pre_sell_func()
+                return
 
     def add_good_func(self):
         input_dialog = AddGoodDialog()
@@ -275,15 +287,16 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
     def show_profit_by_order(self):
         title = 'по дате'
         input_dialog = SearchDateDialog(title)
-        input_dialog.exec()
-        past_date = input_dialog.line_date_past.date().toPyDate().isoformat()
-        now_date = input_dialog.line_date_now.date().toPyDate().isoformat()
-        data = (past_date, now_date)
-        query = QUERY_PATHES['get_income_by_date']
-        header_list = ['№ накладной', 'Артикул', 'Наименование', 'Размер', 'Цена закупки', 'Цена продажи',
-                       'Продано ед.', 'Скидка', 'Прибыль', 'Дата']
-        oper = 'show_profit_by_order'
-        self.get_noneditable_table(query, header_list, data, oper)
+        rez = input_dialog.exec()
+        if rez:
+            past_date = input_dialog.line_date_past.date().toPyDate().isoformat()
+            now_date = input_dialog.line_date_now.date().toPyDate().isoformat()
+            data = (past_date, now_date)
+            query = QUERY_PATHES['get_income_by_date']
+            header_list = ['№ накладной', 'Артикул', 'Наименование', 'Размер', 'Цена закупки', 'Цена продажи',
+                           'Продано ед.', 'Скидка', 'Прибыль', 'Дата']
+            oper = 'show_profit_by_order'
+            self.get_noneditable_table(query, header_list, data, oper)
 
     def show_pre_sell_table(self):
         query_path = QUERY_PATHES['pre_sell']

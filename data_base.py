@@ -49,8 +49,10 @@ class DB:
         return result
 
     def get_good_id_name_list(self):
-        good_id = self.get_data_without_param(QUERY_PATHES['get_good_id'])[0]
-        good_name = self.get_data_without_param(QUERY_PATHES['get_good_name'])[0]
+        id_tuple = self.get_data_without_param(QUERY_PATHES['get_good_id'])
+        name_tuple = self.get_data_without_param(QUERY_PATHES['get_good_name'])
+        good_id = [id_tuple[0][0] for id_tuple[0] in id_tuple]
+        good_name = [name_tuple[0][0] for name_tuple[0] in name_tuple]
         result = []
         for g_id, name in zip(good_id, good_name):
             elem = f'{g_id} ({name})'

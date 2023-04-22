@@ -124,5 +124,15 @@ QUERY_PATHES = {
                            AS income FROM income_table''',
     'get_size_info': '''SELECT good_id, value, size FROM pre_sell WHERE note_num = (?)''',
     'get_size_by_good': '''SELECT * FROM size WHERE good_id = (?)''',
-    'get_income_by_date': '''SELECT * FROM income_table WHERE date BETWEEN (?) and (?)'''
+    'get_income_by_date': '''SELECT * FROM income_table WHERE date BETWEEN (?) and (?)''',
+
+    'get_first': '''SELECT first FROM size WHERE good_id = (?)''',
+    'get_second': '''SELECT second FROM size WHERE good_id = (?)''',
+    'get_third': '''SELECT third FROM size WHERE good_id = (?)''',
+    'get_fourth': '''SELECT fourth FROM size WHERE good_id = (?)''',
+    'get_fifth': '''SELECT fifth FROM size WHERE good_id = (?)''',
+    'get_sixth': '''SELECT sixth FROM size WHERE good_id = (?)''',
+    'get_seventh': '''SELECT seventh FROM size WHERE good_id = (?)''',
+    'get_eighth': '''SELECT  eighth FROM size WHERE good_id = (?)''',
+
 }
