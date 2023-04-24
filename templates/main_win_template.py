@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1200, 600)
+        MainWindow.resize(800, 600)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
@@ -117,7 +117,6 @@ class Ui_MainWindow(object):
         self.menu_2.addAction(self.add_batch)
         self.menu_2.addAction(self.add_good)
         self.menu_2.addAction(self.add_other_costs)
-        self.menu_2.addAction(self.add_size)
         self.menu_2.addAction(self.add_sell_pl)
         self.menu_5.addAction(self.change_good)
         self.menu_6.addAction(self.delete_good)

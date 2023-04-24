@@ -56,7 +56,6 @@
     <addaction name="add_batch"/>
     <addaction name="add_good"/>
     <addaction name="add_other_costs"/>
-    <addaction name="add_size"/>
     <addaction name="add_sell_pl"/>
    </widget>
    <widget class="QMenu" name="menu_5">
