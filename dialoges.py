@@ -53,8 +53,11 @@ class AddSellDialog(BaseDialog):
 
         self.line_add_num = QLineEdit()
         self.line_add_num.setValidator(self.validator)
-        self.line_add_art = QLineEdit()
-        self.line_add_art.setValidator(self.validator)
+        self.line_add_art = QComboBox()
+        func = self.db.get_good_id_name_list()
+        for _ in func:
+            self.line_add_art.addItem(str(_))
+
         self.line_size = QComboBox()
         size_list = ['0-1мес(56см)', '1-3мес(62см)', '3-6мес(68см)', '6-9мес(74см)', '9-12мес(80см)', '12-18мес(86см)',
                      '18-24мес(92см)', '24-36мес(98см)']
@@ -106,29 +109,6 @@ class AddGoodDialog(BaseDialog):
         for _ in list_as:
             self.line_add_batch.addItem(_)
 
-        self.form_layout.addRow('Наименование:', self.line_add_name)
-        self.form_layout.addRow('Цена закупки:', self.line_add_buy_price)
-        self.form_layout.addRow('Партия:', self.line_add_batch)
-        self.form_layout.addRow('Количество:', self.line_add_number)
-        self.form_layout.addRow('Цена продажи:', self.line_add_price)
-
-        self.main_layout.addLayout(self.form_layout)
-        self.main_layout.addWidget(self.button_box)
-
-        self.setLayout(self.main_layout)
-
-
-class AddSizeDialog(BaseDialog):
-    def __init__(self):
-        super().__init__()
-        self.validator = int_valid()
-        self.title = 'Добавление размера'
-        self.setWindowTitle(self.title)
-
-        self.good_id = QComboBox()
-        list_as = self.db.get_good_id_name_list()
-        for _ in list_as:
-            self.good_id.addItem(_)
         self.first_size = QSpinBox()
         self.second_size = QSpinBox()
         self.third_size = QSpinBox()
@@ -138,7 +118,12 @@ class AddSizeDialog(BaseDialog):
         self.seventh_size = QSpinBox()
         self.eighth_size = QSpinBox()
 
-        self.form_layout.addRow('Артикул товара', self.good_id)
+        self.form_layout.addRow('Наименование:', self.line_add_name)
+        self.form_layout.addRow('Цена закупки:', self.line_add_buy_price)
+        self.form_layout.addRow('Партия:', self.line_add_batch)
+        self.form_layout.addRow('Количество:', self.line_add_number)
+        self.form_layout.addRow('Цена продажи:', self.line_add_price)
+
         self.form_layout.addRow('Кол-во 0-1мес(56см)', self.first_size)
         self.form_layout.addRow('Кол-во 1-3мес(62см)', self.second_size)
         self.form_layout.addRow('Кол-во 3-6мес(68см)', self.third_size)
@@ -150,6 +135,7 @@ class AddSizeDialog(BaseDialog):
 
         self.main_layout.addLayout(self.form_layout)
         self.main_layout.addWidget(self.button_box)
+
         self.setLayout(self.main_layout)
 
 
@@ -199,8 +185,21 @@ class EditGoodDialog(BaseDialog):
         self.line_add_number = QLineEdit()
         self.line_add_price = QLineEdit()
 
+        self.first_size = QSpinBox()
+        self.second_size = QSpinBox()
+        self.third_size = QSpinBox()
+        self.fourth_size = QSpinBox()
+        self.fifth_size = QSpinBox()
+        self.sixth_size = QSpinBox()
+        self.seventh_size = QSpinBox()
+        self.eighth_size = QSpinBox()
+
+
         query = QUERY_PATHES['get_current_good']
         art, desc, b_price, batch, num, price = self.db.get_data_with_param(query, art)[0]
+        query_size = QUERY_PATHES['get_size_by_good']
+        _, _, first, second, third, fourth, fifth, sixth, seventh, eighth =\
+            self.db.get_data_with_param(query_size, art)[0]
         self.line_add_id.setText(str(art))
         self.line_add_id.setReadOnly(True)
         self.line_add_name.setText(str(desc))
@@ -213,12 +212,30 @@ class EditGoodDialog(BaseDialog):
         self.line_add_price.setText(str(price))
         self.line_add_price.setValidator(self.validator)
 
+        self.first_size.setValue(first)
+        self.second_size.setValue(second)
+        self.third_size.setValue(third)
+        self.fourth_size.setValue(fourth)
+        self.fifth_size.setValue(fifth)
+        self.sixth_size.setValue(sixth)
+        self.seventh_size.setValue(seventh)
+        self.eighth_size.setValue(eighth)
+
         self.form_layout.addRow('Артикул:', self.line_add_id)
         self.form_layout.addRow('Наименование:', self.line_add_name)
         self.form_layout.addRow('Цена закупки:', self.line_add_buy_price)
         self.form_layout.addRow('Партия:', self.line_add_batch)
         self.form_layout.addRow('Количество:', self.line_add_number)
         self.form_layout.addRow('Цена продажи:', self.line_add_price)
+
+        self.form_layout.addRow('Кол-во 0-1мес(56см)', self.first_size)
+        self.form_layout.addRow('Кол-во 1-3мес(62см)', self.second_size)
+        self.form_layout.addRow('Кол-во 3-6мес(68см)', self.third_size)
+        self.form_layout.addRow('Кол-во 6-9мес(74см)', self.fourth_size)
+        self.form_layout.addRow('Кол-во 9-12мес(80см)', self.fifth_size)
+        self.form_layout.addRow('Кол-во 12-18мес(86см)', self.sixth_size)
+        self.form_layout.addRow('Кол-во 18-24мес(92см)', self.seventh_size)
+        self.form_layout.addRow('Кол-во 24-36мес(98см)', self.eighth_size)
 
         self.main_layout.addLayout(self.form_layout)
         self. main_layout.addWidget(self.button_box)

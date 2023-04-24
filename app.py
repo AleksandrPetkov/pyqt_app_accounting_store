@@ -2,7 +2,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 
 from dialoges import AddBatchOthercostsSellDialog, AddGoodDialog, EditGoodDialog, \
-    SearchDialog, AddSellDialog, AddSizeDialog, SearchDateDialog
+    SearchDialog, AddSellDialog, SearchDateDialog
 from data_base import DB
 from main_win_table import MainWinTableTemplate
 from queres import QUERY_PATHES, ADD_QUERES, UPDATE_QUERES, DELETE_QUERES
@@ -17,7 +17,6 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         self.add_good.triggered.connect(self.add_good_func)
         self.action.triggered.connect(self.add_pre_sell_func)
         self.action_2.triggered.connect(self.submit_sell_func)
-        self.add_size.triggered.connect(self.add_size_func)
         self.add_sell_pl.triggered.connect(self.add_sell_place)
 
         self.show_othercosts.triggered.connect(self.show_other_costs_table)
@@ -100,7 +99,7 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
             return
         if rez:
             num = input_dialog.line_add_num.text()
-            art = input_dialog.line_add_art.text()
+            art = input_dialog.line_add_art.currentText().split()[0]
             size = input_dialog.line_size.currentText()
             sell_p = self.get_data_with_param(QUERY_PATHES['get_current_good'], art)[0][5]
             val = input_dialog.line_add_val.text()
@@ -153,6 +152,16 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         batch = self.get_data_with_param(quere_b_id, input_dialog.line_add_batch.currentText())[0][0]
         number = input_dialog.line_add_number.text()
         price = input_dialog.line_add_price.text()
+
+        first = input_dialog.first_size.text()
+        second = input_dialog.second_size.text()
+        third = input_dialog.third_size.text()
+        fourth = input_dialog.fourth_size.text()
+        fifth = input_dialog.fifth_size.text()
+        sixth = input_dialog.sixth_size.text()
+        seventh = input_dialog.seventh_size.text()
+        eighth = input_dialog.eighth_size.text()
+
         if not name or not number or not price:
             self.get_message(2)
             self.add_good_func()
@@ -174,30 +183,11 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
             data_list_2 = (last_ins_good_id, name)
             self.ins_del_upd_data(query_4, data_list_2)
 
-            self.get_message(3)
-            return
-
-    def add_size_func(self):
-        input_dialog = AddSizeDialog()
-        rez = input_dialog.exec()
-        if not rez:
-            self.get_message(1)
-            return
-        if rez:
-            good_id = input_dialog.good_id.currentText().split()[0]
-            first = input_dialog.first_size.text()
-            second = input_dialog.second_size.text()
-            third = input_dialog.third_size.text()
-            fourth = input_dialog.fourth_size.text()
-            fifth = input_dialog.fifth_size.text()
-            sixth = input_dialog.sixth_size.text()
-            seventh = input_dialog.seventh_size.text()
-            eighth = input_dialog.eighth_size.text()
-
-            query = ADD_QUERES['add_size']
+            query_size = ADD_QUERES['add_size']
             data = (first, second, third, fourth, fifth, sixth,
-                    seventh, eighth, good_id)
-            self.ins_del_upd_data(query, data)
+                    seventh, eighth, last_ins_good_id)
+            self.ins_del_upd_data(query_size, data)
+
             self.get_message(3)
             return
 
@@ -350,6 +340,18 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
                 data_list = [diff, batch_id]
                 query_3 = ADD_QUERES['add_batch_cost']
                 self.ins_del_upd_data(query_3, data_list)
+
+                first = edit_dialog.first_size.text()
+                second = edit_dialog.second_size.text()
+                third = edit_dialog.third_size.text()
+                fourth = edit_dialog.fourth_size.text()
+                fifth = edit_dialog.fifth_size.text()
+                sixth = edit_dialog.sixth_size.text()
+                seventh = edit_dialog.seventh_size.text()
+                eighth = edit_dialog.eighth_size.text()
+                query_up_size = UPDATE_QUERES['update_size']
+                data_size = (first, second, third, fourth, fifth, sixth, seventh, eighth, art_1)
+                self.ins_del_upd_data(query_up_size, data_size)
                 self.get_message(3)
                 return
         if not rez:
