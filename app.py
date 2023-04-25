@@ -45,6 +45,10 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
             return QMessageBox.information(self, 'Отлично', 'Операция успешна!')
         if oper == 4:
             return QMessageBox.information(self, 'Внимание', 'Недостаточно товара этого размера!')
+        if oper == 5:
+            return QMessageBox.information(self, 'Внимание',
+                                           'Количество закупленного товара не'
+                                           'совпадает с количеством размеров!')
 
 
     def add_batch_func(self):
@@ -91,26 +95,35 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
             self.get_message(3)
             return
 
-    def add_pre_sell_func(self):
-        input_dialog = AddSellDialog()
+    def add_pre_sell_func(self, data=None):
+        input_dialog = AddSellDialog(data)
         rez = input_dialog.exec()
+
+        num = input_dialog.line_add_num.text()
+        art = input_dialog.line_add_art.currentText().split()[0]
+        size = input_dialog.line_size.currentText()
+        sell_p = self.get_data_with_param(QUERY_PATHES['get_current_good'], art)[0][5]
+        val = input_dialog.line_add_val.text()
+        discount = input_dialog.line_discount.text()
+        place_id = input_dialog.line_sell_place.currentText()
+        date = input_dialog.line_date.date().toPyDate()
+
+        check_art = input_dialog.line_add_art.currentIndex()
+        check_size = input_dialog.line_size.currentIndex()
+        check_place = input_dialog.line_sell_place.currentIndex()
+        check_date = input_dialog.line_date.date()
+        data_check = (num, check_art, check_size, val, discount, check_place, check_date)
+
         if not rez:
             self.get_message(1)
             return
-        if rez:
-            num = input_dialog.line_add_num.text()
-            art = input_dialog.line_add_art.currentText().split()[0]
-            size = input_dialog.line_size.currentText()
-            sell_p = self.get_data_with_param(QUERY_PATHES['get_current_good'], art)[0][5]
-            val = input_dialog.line_add_val.text()
-            discount = input_dialog.line_discount.text()
-            place_id = input_dialog.line_sell_place.currentText()
-            date = input_dialog.line_date.date().toPyDate()
 
-            if not num or not art or not val:
-                self.get_message(2)
-                self.add_pre_sell_func()
-                return
+        if not num or not art or not val:
+            self.get_message(2)
+            self.add_pre_sell_func(data_check)
+            return
+
+        if rez:
             size_dict_2 = {'0-1мес(56см)': 'get_first', '1-3мес(62см)': 'get_second',
                          '3-6мес(68см)': 'get_third', '6-9мес(74см)': 'get_fourth',
                          '9-12мес(80см)': 'get_fifth', '12-18мес(86см)': 'get_sixth',
@@ -137,11 +150,11 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
                 return
             else:
                 self.get_message(4)
-                self.add_pre_sell_func()
+                self.add_pre_sell_func(data_check)
                 return
 
-    def add_good_func(self):
-        input_dialog = AddGoodDialog()
+    def add_good_func(self, data_1=None):
+        input_dialog = AddGoodDialog(data_1)
         rez = input_dialog.exec()
         if not rez:
             self.get_message(1)
@@ -162,9 +175,18 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         seventh = input_dialog.seventh_size.text()
         eighth = input_dialog.eighth_size.text()
 
+        current_index = input_dialog.line_add_batch.currentIndex()
+
+        data_check = (name, buy_price, current_index, number, price, first, second,
+                      third, fourth, fifth, sixth, seventh, eighth)
+
         if not name or not number or not price:
             self.get_message(2)
-            self.add_good_func()
+            self.add_good_func(data_check)
+            return
+        if int(number) != sum([int(_) for _ in [first, second, third, fourth, fifth, sixth, seventh, eighth]]):
+            self.get_message(5)
+            self.add_good_func(data_check)
             return
         if rez:
             query = ADD_QUERES['add_good']
@@ -187,7 +209,6 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
             data = (first, second, third, fourth, fifth, sixth,
                     seventh, eighth, last_ins_good_id)
             self.ins_del_upd_data(query_size, data)
-
             self.get_message(3)
             return
 

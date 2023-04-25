@@ -1,6 +1,7 @@
 import datetime
 
-from PyQt5.QtWidgets import QLineEdit, QDialog, QFormLayout, QDialogButtonBox, QVBoxLayout, QComboBox, QSpinBox, QDateEdit
+from PyQt5.QtWidgets import QLineEdit, QDialog, QFormLayout, QDialogButtonBox, QVBoxLayout, QComboBox, QSpinBox, \
+    QDateEdit, QMessageBox
 
 from data_base import DB
 from queres import QUERY_PATHES
@@ -45,7 +46,7 @@ class AddBatchOthercostsSellDialog(BaseDialog):
 
 
 class AddSellDialog(BaseDialog):
-    def __init__(self):
+    def __init__(self, data=None):
         super().__init__()
         self.validator = int_valid()
         self.title = 'Добавление продажи'
@@ -76,6 +77,16 @@ class AddSellDialog(BaseDialog):
         now = datetime.datetime.now()
         self.line_date = QDateEdit(now)
 
+        if data:
+            note_num, good_id, size, value, disc, sell_pl, date = data
+            self.line_add_num.setText(note_num)
+            self.line_add_art.setCurrentIndex(good_id)
+            self.line_size.setCurrentIndex(size)
+            self.line_add_val.setText(value)
+            self.line_discount.setText(disc)
+            self.line_sell_place.setCurrentIndex(sell_pl)
+            self.line_date.setDate(date)
+
         self.form_layout.addRow('4 посл. цифры накладной', self.line_add_num)
         self.form_layout.addRow('Артикул товара:', self.line_add_art)
         self.form_layout.addRow('Размер', self.line_size)
@@ -90,7 +101,7 @@ class AddSellDialog(BaseDialog):
 
 
 class AddGoodDialog(BaseDialog):
-    def __init__(self):
+    def __init__(self, data=None):
         super().__init__()
         self.validator = int_valid()
         self.setWindowTitle('Добавление товара')
@@ -117,6 +128,22 @@ class AddGoodDialog(BaseDialog):
         self.sixth_size = QSpinBox()
         self.seventh_size = QSpinBox()
         self.eighth_size = QSpinBox()
+
+        if data:
+            name, b_price, batch, number, s_price, first, second, third, fourth, fifth, sixth, seventh, eighth = data
+            self.line_add_name.setText(name)
+            self.line_add_buy_price.setText(b_price)
+            self.line_add_batch.setCurrentIndex(batch)
+            self.line_add_number.setText(number)
+            self.line_add_price.setText(s_price)
+            self.first_size.setValue(int(first))
+            self.second_size.setValue(int(second))
+            self.third_size.setValue(int(third))
+            self.fourth_size.setValue(int(fourth))
+            self.fifth_size.setValue(int(fifth))
+            self.sixth_size.setValue(int(sixth))
+            self.seventh_size.setValue(int(seventh))
+            self.eighth_size.setValue(int(eighth))
 
         self.form_layout.addRow('Наименование:', self.line_add_name)
         self.form_layout.addRow('Цена закупки:', self.line_add_buy_price)
@@ -240,3 +267,4 @@ class EditGoodDialog(BaseDialog):
         self.main_layout.addLayout(self.form_layout)
         self. main_layout.addWidget(self.button_box)
         self.setLayout(self.main_layout)
+
