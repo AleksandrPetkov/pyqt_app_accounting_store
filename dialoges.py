@@ -289,6 +289,7 @@ class EditGoodDialog2(BaseDialog):
         self.line_add_batch = QComboBox()
 
         self.line_add_number = QLineEdit()
+        self.line_balance = QLineEdit()
         self.line_add_price = QLineEdit()
 
         self.first_size = QSpinBox()
@@ -305,6 +306,7 @@ class EditGoodDialog2(BaseDialog):
         self.form_layout.addRow('Цена закупки:', self.line_add_buy_price)
         self.form_layout.addRow('Партия:', self.line_add_batch)
         self.form_layout.addRow('Количество:', self.line_add_number)
+        self.form_layout.addRow('Остаток:', self.line_balance)
         self.form_layout.addRow('Цена продажи:', self.line_add_price)
 
         self.form_layout.addRow('Кол-во 0-1мес(56см)', self.first_size)
@@ -322,12 +324,12 @@ class EditGoodDialog2(BaseDialog):
 
     def db_data(self, id_str):
         self.good_id = id_str.split()[0]
-        query = QUERY_PATHES['get_current_good']
-        art, desc, b_price, batch, num, price = self.db.get_data_with_param(query, self.good_id)[0]
+        query = QUERY_PATHES['get_current_good_edit']
+        art, desc, b_price, batch, num, price, balance = self.db.get_data_with_param(query, self.good_id)[0]
         query_size = QUERY_PATHES['get_size_by_good']
         _, _, first, second, third, fourth, fifth, sixth, seventh, eighth = \
             self.db.get_data_with_param(query_size, art)[0]
-        result = (art, desc, b_price, batch, num, price, first, second, third, fourth, fifth, sixth, seventh, eighth)
+        result = (art, desc, b_price, batch, num, price, balance, first, second, third, fourth, fifth, sixth, seventh, eighth)
         return self.fill_lines(result)
 
     # def check_data_f(self, id_str):
@@ -336,7 +338,7 @@ class EditGoodDialog2(BaseDialog):
     #     return
 
     def fill_lines(self, data):
-        art, desc, b_price, batch, num, price, first, second, third, fourth, fifth, sixth, seventh, eighth = data
+        art, desc, b_price, batch, num, price, balance, first, second, third, fourth, fifth, sixth, seventh, eighth = data
         # self.line_add_id.setText(str(art))
         # self.line_add_id.setReadOnly(True)
         self.line_add_id.setCurrentText(str(art))
@@ -356,6 +358,8 @@ class EditGoodDialog2(BaseDialog):
 
         self.line_add_number.setText(str(num))
         self.line_add_number.setValidator(self.validator)
+        self.line_balance.setText(str(balance))
+        self.line_balance.setReadOnly(True)
         self.line_add_price.setText(str(price))
         self.line_add_price.setValidator(self.validator)
 

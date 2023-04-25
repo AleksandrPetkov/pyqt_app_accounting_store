@@ -113,6 +113,8 @@ QUERY_PATHES = {
     'get_current_sell': '''SELECT good_id, good_n, sell FROM goods WHERE good_id=(?)''',
     'get_current_good': '''SELECT goods.good_id, goods.good_n, goods.buy_price, batch.batch_n, goods.buy, goods.price
                         FROM goods JOIN batch WHERE goods.batch_id=batch.batch_id AND good_id=(?)''',
+    'get_current_good_edit': '''SELECT goods.good_id, goods.good_n, goods.buy_price, batch.batch_n, goods.buy, goods.price, goods.balance
+                    FROM goods JOIN batch WHERE goods.batch_id=batch.batch_id AND good_id=(?)''',
     'get_buy_price': '''SELECT batch_id FROM goods ORDER BY good_id DESC LIMIT 1''',
     'get_place_names': '''SELECT place_id FROM places''',
     'get_place_names_note': '''SELECT place_n FROM notes WHERE note_num = (?)''',
@@ -141,4 +143,6 @@ QUERY_PATHES = {
     'get_sixth': '''SELECT sixth FROM size WHERE good_id = (?)''',
     'get_seventh': '''SELECT seventh FROM size WHERE good_id = (?)''',
     'get_eighth': '''SELECT  eighth FROM size WHERE good_id = (?)''',
+
+    'get_good_balance': '''SELECT balance FROM goods WHERE good_id=(?)'''
 }

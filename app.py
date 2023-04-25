@@ -356,6 +356,8 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         seventh = edit_dialog.seventh_size.text()
         eighth = edit_dialog.eighth_size.text()
 
+        balance = self.get_data_with_param(QUERY_PATHES['get_good_balance'], art_1)
+
         # batch_check = edit_dialog.line_add_batch.currentIndex()
         # data_check = (art_1, desc, b_price, batch, buy, price, first,
         #               second, third, fourth, fifth, sixth, seventh, eighth)
@@ -363,7 +365,7 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
             self.get_message(1)
             return
 
-        if int(buy) != sum([int(_) for _ in [first, second, third, fourth, fifth, sixth, seventh, eighth]]):
+        if int(balance[0][0]) != sum([int(_) for _ in [first, second, third, fourth, fifth, sixth, seventh, eighth]]):
             self.get_message(5)
             # self.edit_good(data_check)
             return
