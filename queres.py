@@ -144,5 +144,5 @@ QUERY_PATHES = {
     'get_seventh': '''SELECT seventh FROM size WHERE good_id = (?)''',
     'get_eighth': '''SELECT  eighth FROM size WHERE good_id = (?)''',
 
-    'get_good_balance': '''SELECT balance FROM goods WHERE good_id=(?)'''
+    'get_good_balance': '''SELECT buy, balance FROM goods WHERE good_id=(?)'''
 }
