@@ -146,6 +146,8 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
                 query = ADD_QUERES['add_pre_sell']
                 data = (num, art, sell_p, val, discount, size, date)
                 self.ins_del_upd_data(query, data)
+                quere_1 = ADD_QUERES['add_sell']
+                self.ins_del_upd_data(quere_1, (val, art))
                 self.get_message(3)
                 return
             else:
@@ -244,8 +246,8 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
             pre_sells = self.get_data_with_param(quere, sell_id)
             for elem in pre_sells:
                 good_id, sell_price, value, discount, size, date = elem
-                quere_1 = ADD_QUERES['add_sell']
-                self.ins_del_upd_data(quere_1, (value, good_id))
+                # quere_1 = ADD_QUERES['add_sell']
+                # self.ins_del_upd_data(quere_1, (value, good_id))
 
                 good_n, buy_price = self.get_data_with_param(QUERY_PATHES['get_good_n_buy_p'], good_id)[0]
                 data_income = (sell_id, good_id, good_n, size, buy_price, sell_price, value, discount, date)
@@ -459,6 +461,16 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
                 query_data = (int(value), good_id)
                 self.ins_del_upd_data(size_query, query_data)
 
+
+
+            quere = QUERY_PATHES['get_pre_sell']
+            pre_sells = self.get_data_with_param(quere, art)
+            for elem in pre_sells:
+                good_id, _, value, _, _, _ = elem
+                # quere_1 = ADD_QUERES['add_sell']
+                # self.ins_del_upd_data(quere_1, (value, good_id))
+                quere_6 = ADD_QUERES['add_del_sell']
+                self.ins_del_upd_data(quere_6, (int(value), good_id))
             quere_4 = DELETE_QUERES['delete_pre_sell']
             self.ins_del_upd_data(quere_4, (art,))
             quere_5 = DELETE_QUERES['delete_note']

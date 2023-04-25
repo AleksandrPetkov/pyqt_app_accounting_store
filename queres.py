@@ -27,6 +27,7 @@ ADD_QUERES = {
                         VALUES (?,?,?,?,?,?,?)''',
     'add_deliv_note': '''INSERT INTO notes(note_num, place_n) VALUES (?,?)''',
     'add_sell': '''UPDATE goods SET sell = sell + (?) WHERE good_id = (?)''',
+    'add_del_sell': '''UPDATE goods SET sell = sell - (?) WHERE good_id = (?)''',
     'add_oth_cost': '''INSERT INTO other_costs(cost_n, costs) VALUES (?, ?)''',
     'add_batch_cost': '''UPDATE batch SET costs = costs + (?) WHERE batch_id = (?)''',
     'add_income': '''INSERT INTO income_table(note_num, good_id, good_n, size, buy_p, sell_p,
@@ -126,7 +127,11 @@ QUERY_PATHES = {
                            AS income FROM income_table''',
     'get_size_info': '''SELECT good_id, value, size FROM pre_sell WHERE note_num = (?)''',
     'get_size_by_good': '''SELECT * FROM size WHERE good_id = (?)''',
-    'get_income_by_date': '''SELECT * FROM income_table WHERE date BETWEEN (?) and (?)''',
+    'get_income_by_date': '''SELECT note_num, good_id, good_n, size, buy_p, sell_p, order_value, discount,
+                             income, date FROM income_table WHERE date BETWEEN (?) and (?)
+                             UNION SELECT 'Сумма закупки товара' AS note_num, '' AS good_id, '' AS good_n,
+                             '' AS size, '' AS buy_p, '' AS sell_p, '' AS order_value, '' AS discount,
+                             SUM(income) AS income, '' AS date FROM income_table ORDER BY income''',
 
     'get_first': '''SELECT first FROM size WHERE good_id = (?)''',
     'get_second': '''SELECT second FROM size WHERE good_id = (?)''',
@@ -136,5 +141,4 @@ QUERY_PATHES = {
     'get_sixth': '''SELECT sixth FROM size WHERE good_id = (?)''',
     'get_seventh': '''SELECT seventh FROM size WHERE good_id = (?)''',
     'get_eighth': '''SELECT  eighth FROM size WHERE good_id = (?)''',
-
 }
