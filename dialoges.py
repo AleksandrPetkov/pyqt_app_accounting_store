@@ -200,15 +200,95 @@ class SearchDateDialog(BaseDialog):
         self.setLayout(self.main_layout)
 
 
-class EditGoodDialog(BaseDialog):
-    def __init__(self, art):
+# class EditGoodDialog(BaseDialog):
+#     def __init__(self, art):
+#         super().__init__()
+#         self.setWindowTitle('Изменение товара')
+#         self.validator = int_valid()
+#         self.line_add_id = QLineEdit()
+#         self.line_add_name = QLineEdit()
+#         self.line_add_buy_price = QLineEdit()
+#         self.line_add_batch = QLineEdit()
+#         self.line_add_number = QLineEdit()
+#         self.line_add_price = QLineEdit()
+#
+#         self.first_size = QSpinBox()
+#         self.second_size = QSpinBox()
+#         self.third_size = QSpinBox()
+#         self.fourth_size = QSpinBox()
+#         self.fifth_size = QSpinBox()
+#         self.sixth_size = QSpinBox()
+#         self.seventh_size = QSpinBox()
+#         self.eighth_size = QSpinBox()
+#
+#
+#         query = QUERY_PATHES['get_current_good']
+#         art, desc, b_price, batch, num, price = self.db.get_data_with_param(query, art)[0]
+#         query_size = QUERY_PATHES['get_size_by_good']
+#         _, _, first, second, third, fourth, fifth, sixth, seventh, eighth =\
+#             self.db.get_data_with_param(query_size, art)[0]
+#         self.line_add_id.setText(str(art))
+#         self.line_add_id.setReadOnly(True)
+#         self.line_add_name.setText(str(desc))
+#         self.line_add_buy_price.setText(str(b_price))
+#         self.line_add_buy_price.setValidator(self.validator)
+#         self.line_add_batch.setText(str(batch))
+#         self.line_add_batch.setReadOnly(True)
+#         self.line_add_number.setText(str(num))
+#         self.line_add_number.setValidator(self.validator)
+#         self.line_add_price.setText(str(price))
+#         self.line_add_price.setValidator(self.validator)
+#
+#         self.first_size.setValue(first)
+#         self.second_size.setValue(second)
+#         self.third_size.setValue(third)
+#         self.fourth_size.setValue(fourth)
+#         self.fifth_size.setValue(fifth)
+#         self.sixth_size.setValue(sixth)
+#         self.seventh_size.setValue(seventh)
+#         self.eighth_size.setValue(eighth)
+#
+#         self.form_layout.addRow('Артикул:', self.line_add_id)
+#         self.form_layout.addRow('Наименование:', self.line_add_name)
+#         self.form_layout.addRow('Цена закупки:', self.line_add_buy_price)
+#         self.form_layout.addRow('Партия:', self.line_add_batch)
+#         self.form_layout.addRow('Количество:', self.line_add_number)
+#         self.form_layout.addRow('Цена продажи:', self.line_add_price)
+#
+#         self.form_layout.addRow('Кол-во 0-1мес(56см)', self.first_size)
+#         self.form_layout.addRow('Кол-во 1-3мес(62см)', self.second_size)
+#         self.form_layout.addRow('Кол-во 3-6мес(68см)', self.third_size)
+#         self.form_layout.addRow('Кол-во 6-9мес(74см)', self.fourth_size)
+#         self.form_layout.addRow('Кол-во 9-12мес(80см)', self.fifth_size)
+#         self.form_layout.addRow('Кол-во 12-18мес(86см)', self.sixth_size)
+#         self.form_layout.addRow('Кол-во 18-24мес(92см)', self.seventh_size)
+#         self.form_layout.addRow('Кол-во 24-36мес(98см)', self.eighth_size)
+#
+#         self.main_layout.addLayout(self.form_layout)
+#         self. main_layout.addWidget(self.button_box)
+#         self.setLayout(self.main_layout)
+
+
+class EditGoodDialog2(BaseDialog):
+    def __init__(self, check_data=None):
         super().__init__()
         self.setWindowTitle('Изменение товара')
         self.validator = int_valid()
-        self.line_add_id = QLineEdit()
+        self.check_data_1 = check_data
+        self.line_add_id = QComboBox()
+        self.line_add_id.addItem('----')
+        func = self.db.get_good_id_name_list()
+        for _ in func:
+            self.line_add_id.addItem(str(_))
+        # if check_data:
+        #     self.line_add_id.activated[str].connect(self.check_data_f)
+        else:
+            self.line_add_id.activated[str].connect(self.db_data)
+
         self.line_add_name = QLineEdit()
         self.line_add_buy_price = QLineEdit()
-        self.line_add_batch = QLineEdit()
+        self.line_add_batch = QComboBox()
+
         self.line_add_number = QLineEdit()
         self.line_add_price = QLineEdit()
 
@@ -220,33 +300,6 @@ class EditGoodDialog(BaseDialog):
         self.sixth_size = QSpinBox()
         self.seventh_size = QSpinBox()
         self.eighth_size = QSpinBox()
-
-
-        query = QUERY_PATHES['get_current_good']
-        art, desc, b_price, batch, num, price = self.db.get_data_with_param(query, art)[0]
-        query_size = QUERY_PATHES['get_size_by_good']
-        _, _, first, second, third, fourth, fifth, sixth, seventh, eighth =\
-            self.db.get_data_with_param(query_size, art)[0]
-        self.line_add_id.setText(str(art))
-        self.line_add_id.setReadOnly(True)
-        self.line_add_name.setText(str(desc))
-        self.line_add_buy_price.setText(str(b_price))
-        self.line_add_buy_price.setValidator(self.validator)
-        self.line_add_batch.setText(str(batch))
-        self.line_add_batch.setReadOnly(True)
-        self.line_add_number.setText(str(num))
-        self.line_add_number.setValidator(self.validator)
-        self.line_add_price.setText(str(price))
-        self.line_add_price.setValidator(self.validator)
-
-        self.first_size.setValue(first)
-        self.second_size.setValue(second)
-        self.third_size.setValue(third)
-        self.fourth_size.setValue(fourth)
-        self.fifth_size.setValue(fifth)
-        self.sixth_size.setValue(sixth)
-        self.seventh_size.setValue(seventh)
-        self.eighth_size.setValue(eighth)
 
         self.form_layout.addRow('Артикул:', self.line_add_id)
         self.form_layout.addRow('Наименование:', self.line_add_name)
@@ -267,4 +320,52 @@ class EditGoodDialog(BaseDialog):
         self.main_layout.addLayout(self.form_layout)
         self. main_layout.addWidget(self.button_box)
         self.setLayout(self.main_layout)
+
+    def db_data(self, id_str):
+        self.good_id = id_str.split()[0]
+        query = QUERY_PATHES['get_current_good']
+        art, desc, b_price, batch, num, price = self.db.get_data_with_param(query, self.good_id)[0]
+        query_size = QUERY_PATHES['get_size_by_good']
+        _, _, first, second, third, fourth, fifth, sixth, seventh, eighth = \
+            self.db.get_data_with_param(query_size, art)[0]
+        result = (art, desc, b_price, batch, num, price, first, second, third, fourth, fifth, sixth, seventh, eighth)
+        return self.fill_lines(result)
+
+    # def check_data_f(self, id_str):
+    #     self.line_add_id.setCurrentIndex(id_str)
+    #     self.fill_lines(self.check_data_1)
+    #     return
+
+    def fill_lines(self, data):
+        art, desc, b_price, batch, num, price, first, second, third, fourth, fifth, sixth, seventh, eighth = data
+        # self.line_add_id.setText(str(art))
+        # self.line_add_id.setReadOnly(True)
+        self.line_add_id.setCurrentIndex(art)
+        # self.line_add_name.setText(desc)
+        self.line_add_name.setText(str(desc))
+        self.line_add_buy_price.setText(str(b_price))
+        self.line_add_buy_price.setValidator(self.validator)
+
+        self.line_add_batch.clear()
+        # index = self.line_add_batch.findData(batch)
+        # self.line_add_batch.setCurrentIndex(index)
+        path = QUERY_PATHES['get_batch_names']
+        list_as = self.db.get_data_list(path)
+        for _ in list_as:
+            self.line_add_batch.addItem(_)
+        self.line_add_batch.setCurrentIndex(self.line_add_batch.findText(batch))
+
+        self.line_add_number.setText(str(num))
+        self.line_add_number.setValidator(self.validator)
+        self.line_add_price.setText(str(price))
+        self.line_add_price.setValidator(self.validator)
+
+        self.first_size.setValue(first)
+        self.second_size.setValue(second)
+        self.third_size.setValue(third)
+        self.fourth_size.setValue(fourth)
+        self.fifth_size.setValue(fifth)
+        self.sixth_size.setValue(sixth)
+        self.seventh_size.setValue(seventh)
+        self.eighth_size.setValue(eighth)
 

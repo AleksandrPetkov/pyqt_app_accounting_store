@@ -52,7 +52,7 @@ UPDATE_QUERES = {
     'update_batch': '''UPDATE batch SET costs = costs - (?) WHERE batch_id = (?)''',
     'update_good': '''UPDATE goods SET good_n = (?), buy_price = (?), buy = (?), price = (?)
                   WHERE good_id=(?)''',
-    'update_size': '''UPDATE size SET first = (?), second = (?), third = (?), fourth = (?),
+    'update_size': '''UPDATE size SET good_n = (?), first = (?), second = (?), third = (?), fourth = (?),
                       fifth = (?), sixth = (?), seventh = (?), eighth = (?) WHERE good_id=(?)''',
 
     'update_first_sell': '''UPDATE size SET first = first - (?) WHERE good_id = (?)''',

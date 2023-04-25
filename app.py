@@ -1,8 +1,8 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 
-from dialoges import AddBatchOthercostsSellDialog, AddGoodDialog, EditGoodDialog, \
-    SearchDialog, AddSellDialog, SearchDateDialog
+from dialoges import AddBatchOthercostsSellDialog, AddGoodDialog, \
+    SearchDialog, AddSellDialog, SearchDateDialog, EditGoodDialog2
 from data_base import DB
 from main_win_table import MainWinTableTemplate
 from queres import QUERY_PATHES, ADD_QUERES, UPDATE_QUERES, DELETE_QUERES
@@ -332,51 +332,60 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         oper = 'show_size'
         self.get_noneditable_table(query, header_list, art, oper)
 
-    def edit_good(self):
-        title = 'товара'
-        func = self.get_good_id_name_list()
-        input_dialog = SearchDialog(title, func)
-        rez = input_dialog.exec()
-        if rez:
-            art = input_dialog.line_add_batch.currentText().split()[0]
-            edit_dialog = EditGoodDialog(art)
-            rez = edit_dialog.exec()
-            if not rez:
-                self.get_message(1)
-                return
-            if rez:
-                query_b = QUERY_PATHES['get_current_good']
-                old_b_price, batch_n, old_b_num = self.get_data_with_param(query_b, art)[0][2:5]
-                path = UPDATE_QUERES['update_good']
-                art_1 = edit_dialog.line_add_id.text()
-                desc = edit_dialog.line_add_name.text()
-                b_price = edit_dialog.line_add_buy_price.text()
-                buy = edit_dialog.line_add_number.text()
-                price = edit_dialog.line_add_price.text()
-                data = (desc, b_price, buy, price, art_1)
-                self.ins_del_upd_data(path, data)
-                diff = int(b_price)*int(buy) - int(old_b_price)*int(old_b_num)
-                quere_b_id = QUERY_PATHES['get_batch_id_by_name']
-                batch_id = self.get_data_with_param(quere_b_id, batch_n)[0][0]
-                data_list = [diff, batch_id]
-                query_3 = ADD_QUERES['add_batch_cost']
-                self.ins_del_upd_data(query_3, data_list)
 
-                first = edit_dialog.first_size.text()
-                second = edit_dialog.second_size.text()
-                third = edit_dialog.third_size.text()
-                fourth = edit_dialog.fourth_size.text()
-                fifth = edit_dialog.fifth_size.text()
-                sixth = edit_dialog.sixth_size.text()
-                seventh = edit_dialog.seventh_size.text()
-                eighth = edit_dialog.eighth_size.text()
-                query_up_size = UPDATE_QUERES['update_size']
-                data_size = (first, second, third, fourth, fifth, sixth, seventh, eighth, art_1)
-                self.ins_del_upd_data(query_up_size, data_size)
-                self.get_message(3)
-                return
+    def edit_good(self, data=None):
+        edit_dialog = EditGoodDialog2(data)
+        rez = edit_dialog.exec()
+
+        art_1 = edit_dialog.line_add_id.currentText().split()[0]
+        desc = edit_dialog.line_add_name.text()
+        b_price = edit_dialog.line_add_buy_price.text()
+        batch = edit_dialog.line_add_batch.currentText()
+        buy = edit_dialog.line_add_number.text()
+        price = edit_dialog.line_add_price.text()
+
+        first = edit_dialog.first_size.text()
+        second = edit_dialog.second_size.text()
+        third = edit_dialog.third_size.text()
+        fourth = edit_dialog.fourth_size.text()
+        fifth = edit_dialog.fifth_size.text()
+        sixth = edit_dialog.sixth_size.text()
+        seventh = edit_dialog.seventh_size.text()
+        eighth = edit_dialog.eighth_size.text()
+
+        batch_check = edit_dialog.line_add_batch.currentIndex()
+        # data_check = (art_1_check, desc, b_price, batch, buy, price, first,
+        #               second, third, fourth, fifth, sixth, seventh, eighth)
         if not rez:
             self.get_message(1)
+            return
+
+        if int(buy) != sum([int(_) for _ in [first, second, third, fourth, fifth, sixth, seventh, eighth]]):
+            self.get_message(5)
+            # self.edit_good(data_check)
+            return
+
+        if rez:
+            query_b = QUERY_PATHES['get_current_good']
+            old_b_price, batch_n, old_b_num = self.get_data_with_param(query_b, edit_dialog.good_id)[0][2:5]
+            path = UPDATE_QUERES['update_good']
+            data = (desc, b_price, buy, price, art_1)
+            self.ins_del_upd_data(path, data)
+            # diff = int(b_price)*int(buy) - int(old_b_price)*int(old_b_num)
+            minus = - int(old_b_price)*int(old_b_num)
+            plus = int(b_price)*int(buy)
+            quere_b_id = QUERY_PATHES['get_batch_id_by_name']
+            batch_id_old = self.get_data_with_param(quere_b_id, batch_n)[0][0]
+            batch_id_new = self.get_data_with_param(quere_b_id, batch)[0][0]
+            data_minus = [minus, batch_id_old]
+            data_plus = [plus, batch_id_new]
+            query_3 = ADD_QUERES['add_batch_cost']
+            self.ins_del_upd_data(query_3, data_minus)
+            self.ins_del_upd_data(query_3, data_plus)
+            query_up_size = UPDATE_QUERES['update_size']
+            data_size = (desc, first, second, third, fourth, fifth, sixth, seventh, eighth, art_1)
+            self.ins_del_upd_data(query_up_size, data_size)
+            self.get_message(3)
             return
 
     def delete_func(self, params):
