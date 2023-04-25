@@ -340,6 +340,7 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         rez = edit_dialog.exec()
 
         art_1 = edit_dialog.line_add_id.currentText().split()[0]
+        # art_1 = edit_dialog.line_add_id.text()
         desc = edit_dialog.line_add_name.text()
         b_price = edit_dialog.line_add_buy_price.text()
         batch = edit_dialog.line_add_batch.currentText()
@@ -355,7 +356,7 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         seventh = edit_dialog.seventh_size.text()
         eighth = edit_dialog.eighth_size.text()
 
-        batch_check = edit_dialog.line_add_batch.currentIndex()
+        # batch_check = edit_dialog.line_add_batch.currentIndex()
         # data_check = (art_1_check, desc, b_price, batch, buy, price, first,
         #               second, third, fourth, fifth, sixth, seventh, eighth)
         if not rez:

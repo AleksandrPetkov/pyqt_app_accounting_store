@@ -279,11 +279,10 @@ class EditGoodDialog2(BaseDialog):
         self.line_add_id.addItem('----')
         func = self.db.get_good_id_name_list()
         for _ in func:
-            self.line_add_id.addItem(str(_))
+            self.line_add_id.addItem(_)
         # if check_data:
         #     self.line_add_id.activated[str].connect(self.check_data_f)
-        else:
-            self.line_add_id.activated[str].connect(self.db_data)
+        self.line_add_id.activated[str].connect(self.db_data)
 
         self.line_add_name = QLineEdit()
         self.line_add_buy_price = QLineEdit()
@@ -340,7 +339,7 @@ class EditGoodDialog2(BaseDialog):
         art, desc, b_price, batch, num, price, first, second, third, fourth, fifth, sixth, seventh, eighth = data
         # self.line_add_id.setText(str(art))
         # self.line_add_id.setReadOnly(True)
-        self.line_add_id.setCurrentIndex(art)
+        self.line_add_id.setCurrentText(str(art))
         # self.line_add_name.setText(desc)
         self.line_add_name.setText(str(desc))
         self.line_add_buy_price.setText(str(b_price))
