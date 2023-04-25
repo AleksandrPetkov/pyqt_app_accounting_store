@@ -357,7 +357,7 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         eighth = edit_dialog.eighth_size.text()
 
         # batch_check = edit_dialog.line_add_batch.currentIndex()
-        # data_check = (art_1_check, desc, b_price, batch, buy, price, first,
+        # data_check = (art_1, desc, b_price, batch, buy, price, first,
         #               second, third, fourth, fifth, sixth, seventh, eighth)
         if not rez:
             self.get_message(1)

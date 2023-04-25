@@ -279,7 +279,7 @@ class EditGoodDialog2(BaseDialog):
         self.line_add_id.addItem('----')
         func = self.db.get_good_id_name_list()
         for _ in func:
-            self.line_add_id.addItem(_)
+            self.line_add_id.addItem(str(_))
         # if check_data:
         #     self.line_add_id.activated[str].connect(self.check_data_f)
         self.line_add_id.activated[str].connect(self.db_data)
