@@ -50,7 +50,6 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
                                            'Количество закупленного товара не'
                                            'совпадает с количеством размеров!')
 
-
     def add_batch_func(self):
         title = 'Добавление партии'
         line_1 = 'Наименование:'
@@ -124,17 +123,21 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
             return
 
         if rez:
-            size_dict_2 = {'0-1мес(56см)': 'get_first', '1-3мес(62см)': 'get_second',
-                         '3-6мес(68см)': 'get_third', '6-9мес(74см)': 'get_fourth',
-                         '9-12мес(80см)': 'get_fifth', '12-18мес(86см)': 'get_sixth',
-                         '18-24мес(92см)': 'get_seventh', '24-36мес(98см)': 'get_eighth'}
+            size_dict_2 = {
+                '0-1мес(56см)': 'get_first', '1-3мес(62см)': 'get_second',
+                '3-6мес(68см)': 'get_third', '6-9мес(74см)': 'get_fourth',
+                '9-12мес(80см)': 'get_fifth', '12-18мес(86см)': 'get_sixth',
+                '18-24мес(92см)': 'get_seventh', '24-36мес(98см)': 'get_eighth'
+            }
             size_balance = self.get_data_with_param(QUERY_PATHES[size_dict_2[size]], art)[0][0]
             if size_balance >= int(val):
                 func = self.get_data_list(QUERY_PATHES['get_note_num'])
-                size_dict = {'0-1мес(56см)': 'update_first_sell', '1-3мес(62см)': 'update_second_sell',
-                             '3-6мес(68см)': 'update_third_sell', '6-9мес(74см)': 'update_fourth_sell',
-                             '9-12мес(80см)': 'update_fifth_sell', '12-18мес(86см)': 'update_sixth_sell',
-                             '18-24мес(92см)': 'update_seventh_sell', '24-36мес(98см)': 'update_eighth_sell'}
+                size_dict = {
+                    '0-1мес(56см)': 'update_first_sell', '1-3мес(62см)': 'update_second_sell',
+                    '3-6мес(68см)': 'update_third_sell', '6-9мес(74см)': 'update_fourth_sell',
+                    '9-12мес(80см)': 'update_fifth_sell', '12-18мес(86см)': 'update_sixth_sell',
+                    '18-24мес(92см)': 'update_seventh_sell', '24-36мес(98см)': 'update_eighth_sell'
+                }
                 size_query = UPDATE_QUERES[size_dict[size]]
                 query_data = (int(val), art)
                 self.ins_del_upd_data(size_query, query_data)
@@ -334,13 +337,11 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         oper = 'show_size'
         self.get_noneditable_table(query, header_list, art, oper)
 
-
     def edit_good(self, data=None):
         edit_dialog = EditGoodDialog2(data)
         rez = edit_dialog.exec()
 
         art_1 = edit_dialog.line_add_id.currentText().split()[0]
-        # art_1 = edit_dialog.line_add_id.text()
         desc = edit_dialog.line_add_name.text()
         b_price = edit_dialog.line_add_buy_price.text()
         batch = edit_dialog.line_add_batch.currentText()
@@ -355,20 +356,17 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         sixth = edit_dialog.sixth_size.text()
         seventh = edit_dialog.seventh_size.text()
         eighth = edit_dialog.eighth_size.text()
+        sizes = [first, second, third, fourth, fifth, sixth, seventh, eighth]
 
         if art_1 != '----':
             buy_old, balance = self.get_data_with_param(QUERY_PATHES['get_good_balance'], art_1)[0]
 
-        # batch_check = edit_dialog.line_add_batch.currentIndex()
-        # data_check = (art_1, desc, b_price, batch, buy, price, first,
-        #               second, third, fourth, fifth, sixth, seventh, eighth)
         if not rez:
             self.get_message(1)
             return
 
-        if (int(buy) - int(buy_old) + int(balance)) != sum([int(_) for _ in [first, second, third, fourth, fifth, sixth, seventh, eighth]]):
+        if (int(buy) - int(buy_old) + int(balance)) != sum([int(_) for _ in sizes]):
             self.get_message(5)
-            # self.edit_good(data_check)
             return
 
         if rez:
@@ -377,7 +375,6 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
             path = UPDATE_QUERES['update_good']
             data = (desc, b_price, buy, price, art_1)
             self.ins_del_upd_data(path, data)
-            # diff = int(b_price)*int(buy) - int(old_b_price)*int(old_b_num)
             minus = - int(old_b_price)*int(old_b_num)
             plus = int(b_price)*int(buy)
             quere_b_id = QUERY_PATHES['get_batch_id_by_name']
@@ -465,14 +462,10 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
                 query_data = (int(value), good_id)
                 self.ins_del_upd_data(size_query, query_data)
 
-
-
             quere = QUERY_PATHES['get_pre_sell']
             pre_sells = self.get_data_with_param(quere, art)
             for elem in pre_sells:
                 good_id, _, value, _, _, _ = elem
-                # quere_1 = ADD_QUERES['add_sell']
-                # self.ins_del_upd_data(quere_1, (value, good_id))
                 quere_6 = ADD_QUERES['add_del_sell']
                 self.ins_del_upd_data(quere_6, (int(value), good_id))
             quere_4 = DELETE_QUERES['delete_pre_sell']

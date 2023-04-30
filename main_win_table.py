@@ -3,7 +3,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtSql import QSqlTableModel
 
 from data_base import DB
-from queres import DELETE_QUERES, QUERY_PATHES
+from queres import DELETE_QUERES
 
 from templates import main_win_template
 
@@ -99,4 +99,3 @@ class MainWinTableTemplate(main_win_template.Ui_MainWindow):
         self.tableView.setModel(table_model)
         self.tableView.resizeColumnsToContents()
         self.db_1.close()
-

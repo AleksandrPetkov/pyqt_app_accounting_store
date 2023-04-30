@@ -58,4 +58,3 @@ class DB:
             elem = f'{g_id} ({name})'
             result.append(elem)
         return result
-
