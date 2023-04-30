@@ -324,13 +324,18 @@ class EditGoodDialog2(BaseDialog):
 
     def db_data(self, id_str):
         self.good_id = id_str.split()[0]
-        query = QUERY_PATHES['get_current_good_edit']
-        art, desc, b_price, batch, num, price, balance = self.db.get_data_with_param(query, self.good_id)[0]
-        query_size = QUERY_PATHES['get_size_by_good']
-        _, _, first, second, third, fourth, fifth, sixth, seventh, eighth = \
-            self.db.get_data_with_param(query_size, art)[0]
-        result = (art, desc, b_price, batch, num, price, balance, first, second, third, fourth, fifth, sixth, seventh, eighth)
-        return self.fill_lines(result)
+        if self.line_add_id.currentText() != '----':
+            query = QUERY_PATHES['get_current_good_edit']
+            art, desc, b_price, batch, num, price, balance = self.db.get_data_with_param(query, self.good_id)[0]
+            query_size = QUERY_PATHES['get_size_by_good']
+            _, _, first, second, third, fourth, fifth, sixth, seventh, eighth = \
+                self.db.get_data_with_param(query_size, art)[0]
+            result = (
+            art, desc, b_price, batch, num, price, balance, first, second, third, fourth, fifth, sixth, seventh, eighth)
+            return self.fill_lines(result)
+        else:
+            result = (None, None, None, None, None, None, None, 0, 0, 0, 0, 0, 0, 0, 0)
+            return self.fill_lines(result)
 
     # def check_data_f(self, id_str):
     #     self.line_add_id.setCurrentIndex(id_str)
