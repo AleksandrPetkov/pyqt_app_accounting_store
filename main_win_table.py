@@ -61,8 +61,11 @@ class MainWinTableTemplate(main_win_template.Ui_MainWindow):
         if oper == 'show_size':
             query.bindValue(0, data)
         if oper == 'show_profit_by_order':
-            query.bindValue(0, data[0])
-            query.bindValue(1, data[1])
+            past_1, now_1, past_2, now_2 = data
+            query.bindValue(0, past_1)
+            query.bindValue(1, now_1)
+            query.bindValue(2, past_1)
+            query.bindValue(3, now_2)
         if oper == 'good_by_batch':
             query.bindValue(0, data)
             query.bindValue(1, data)

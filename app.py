@@ -304,7 +304,7 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         if rez:
             past_date = input_dialog.line_date_past.date().toPyDate().isoformat()
             now_date = input_dialog.line_date_now.date().toPyDate().isoformat()
-            data = (past_date, now_date)
+            data = (past_date, now_date, past_date, now_date)
             query = QUERY_PATHES['get_income_by_date']
             header_list = ['№ накладной', 'Артикул', 'Наименование', 'Размер', 'Цена закупки', 'Цена продажи',
                            'Продано ед.', 'Скидка', 'Прибыль', 'Дата']

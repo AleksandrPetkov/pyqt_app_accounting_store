@@ -133,7 +133,7 @@ QUERY_PATHES = {
                              income, date FROM income_table WHERE date BETWEEN (?) and (?)
                              UNION SELECT 'Сумма закупки товара' AS note_num, '' AS good_id, '' AS good_n,
                              '' AS size, '' AS buy_p, '' AS sell_p, '' AS order_value, '' AS discount,
-                             SUM(income) AS income, '' AS date FROM income_table ORDER BY income''',
+                             SUM(income) AS income, '' AS date FROM income_table WHERE date BETWEEN (?) and (?) ORDER BY note_num''',
 
     'get_first': '''SELECT first FROM size WHERE good_id = (?)''',
     'get_second': '''SELECT second FROM size WHERE good_id = (?)''',
