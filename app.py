@@ -310,7 +310,7 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
             data = (past_date, now_date, past_date, now_date)
             query = QUERY_PATHES['get_income_by_date']
             header_list = ['№ накладной', 'Артикул', 'Наименование', 'Размер', 'Цена закупки', 'Цена продажи',
-                           'Продано ед.', 'Скидка', 'Прибыль', 'Дата']
+                           'Продано ед.', 'Скидка', 'Приход на карту', 'Прибыль', 'Дата']
             oper = 'show_profit_by_order'
             self.get_noneditable_table(query, header_list, data, oper)
 

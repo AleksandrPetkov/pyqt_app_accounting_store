@@ -13,7 +13,7 @@ CREATE_QUERES = {
                              cost_n text, costs integer DEFAULT 0)''',
     'create_table_income': '''CREATE TABLE IF NOT EXISTS income_table (note_num integer,
                               good_id integer, good_n text, size text, buy_p int, sell_p int, order_value int,
-                              discount int, income int AS ((sell_p-buy_p)*order_value-discount), date text)''',
+                              discount int, cash int AS (sell_p*order_value-discount), income int AS (cash - buy_p*order_value), date text)''',
     'create_table_places': '''CREATE TABLE IF NOT EXISTS places (place_id text, place_n integer DEFAULT 0)''',
     'create_table_pre_sell': '''CREATE TABLE IF NOT EXISTS pre_sell (note_num integer, good_id int, sell_price int,
                                 value int, discount int DEFAULT 0, size int, date text)''',
@@ -129,10 +129,10 @@ QUERY_PATHES = {
                            AS income FROM income_table''',
     'get_size_info': '''SELECT good_id, value, size FROM pre_sell WHERE note_num = (?)''',
     'get_size_by_good': '''SELECT * FROM size WHERE good_id = (?)''',
-    'get_income_by_date': '''SELECT note_num, good_id, good_n, size, buy_p, sell_p, order_value, discount,
+    'get_income_by_date': '''SELECT note_num, good_id, good_n, size, buy_p, sell_p, order_value, discount, cash, 
                              income, date FROM income_table WHERE date BETWEEN (?) and (?)
                              UNION SELECT 'Сумма закупки товара' AS note_num, '' AS good_id, '' AS good_n,
-                             '' AS size, '' AS buy_p, '' AS sell_p, '' AS order_value, '' AS discount,
+                             '' AS size, '' AS buy_p, '' AS sell_p, '' AS order_value, '' AS discount, SUM(cash) AS cash,
                              SUM(income) AS income, '' AS date FROM income_table WHERE date BETWEEN (?) and (?) ORDER BY note_num''',
 
     'get_first': '''SELECT first FROM size WHERE good_id = (?)''',
