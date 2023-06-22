@@ -338,7 +338,7 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         self.get_noneditable_table(query, header_list, art, oper)
 
     def edit_good(self, data=None):
-        edit_dialog = EditGoodDialog2(data)
+        edit_dialog = EditGoodDialog2()
         rez = edit_dialog.exec()
 
         art_1 = edit_dialog.line_add_id.currentText().split()[0]
