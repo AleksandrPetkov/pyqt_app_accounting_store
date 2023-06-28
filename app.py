@@ -57,6 +57,9 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
             return QMessageBox.information(self, 'Внимание',
                                            'Количество закупленного товара не'
                                            'совпадает с количеством размеров!')
+        if oper == 6:
+            return QMessageBox.information(self, 'Внимание',
+                                           'Ни одна таблица не загружена!')
 
     def add_batch_func(self):
         title = 'Добавление партии'
@@ -492,41 +495,16 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
             self.get_message(1)
             return
 
-    # def export_table(self):
-    #     rows = self.tableView.model()
-    #     if not rows:
-    #         msg = QMessageBox.information(self, 'Внимание', 'Нечего сохранять.')
-    #         return
-    #
-    #     path, _ = QFileDialog.getSaveFileName(self, 'Save Excel', '.', 'Excel(*.xlsx)')
-    #     if not path:
-    #         msg = QMessageBox.information(self, 'Внимание', 'Не указан файл для сохранения.')
-    #         return
-    #
-    #     columnHeaders = []
-    #     # columnHeaders = self.tableView.horizontalHeader()
-    #
-    #     # создать список заголовков столбцов
-    #     # for j in range(self.tableView.model().columnCount()):
-    #     #     columnHeaders.append(self.tableView.horizontalHeaderItem(j).text())
-    #     for header in range(self.tableView.model().columnCount()):
-    #         columnHeaders.append(self.tableView.model().headerData(header, Qt.Horizontal))
-    #
-    #     df = pd.DataFrame(columns=columnHeaders)
-    #
-    #     # создать набор записей объекта dataframe
-    #     for row in range(self.tableView.model().rowCount()):
-    #         for col in range(self.tableView.model().columnCount()):
-    #             table_idx = self.tableView.model().index(row, col)
-    #             df.at[row, columnHeaders[col]] = self.tableView.model().data(table_idx)
-    #             # df.at[row, columnHeaders[col]] = self.tableView.model().item(row, col).text()
-    #
-    #     df.to_excel(path, index=False)
-    #     msg = QMessageBox.information(self, 'Ok', 'Excel file exported.')
-
     def export_table(self):
+        if not self.tableView.model():
+            return self.get_message(6)
+
         path, ok = QtWidgets.QFileDialog.getSaveFileName(
-            self, 'Save CSV', '', 'CSV(*.csv)')
+            self, 'Сохранить таблицу', '', 'CSV(*.csv)')
+
+        if not path:
+            return self.get_message(1)
+
         if ok:
             columns = range(self.tableView.model().columnCount())
             headers = [self.tableView.model().headerData(header, Qt.Horizontal) for header in columns]
@@ -540,10 +518,4 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
                         idx = self.tableView.model().index(row, column)
                         row_data.append(self.tableView.model().itemData(idx)[0])
                     writer.writerow(row_data)
-                        # item(row, column).text()
-                        # for column in columns)
-                        # self.tableView.model().item(row, column).text()
-                        # for column in columns)
-
-
-
+            self.get_message(3)
