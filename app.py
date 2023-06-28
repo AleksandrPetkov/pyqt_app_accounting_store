@@ -1,5 +1,8 @@
+import os
+
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QMessageBox, QFileDialog
 
 from dialoges import AddBatchOthercostsSellDialog, AddGoodDialog, \
     SearchDialog, AddSellDialog, SearchDateDialog, EditGoodDialog2
@@ -7,6 +10,8 @@ from data_base import DB
 from main_win_table import MainWinTableTemplate
 from queres import QUERY_PATHES, ADD_QUERES, UPDATE_QUERES, DELETE_QUERES
 
+import pandas as pd
+import sys, csv
 
 class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
     def __init__(self):
@@ -27,6 +32,7 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         self.show_batches_ta.triggered.connect(self.show_batches_table)
         self.order_place.triggered.connect(self.show_places_table)
         self.size_by_cloth.triggered.connect(self.show_size_by_id_table)
+        self.action_5.triggered.connect(self.show_all_sizes_table)
         self.fin_res_by_order.triggered.connect(self.show_profit_by_order)
 
         self.change_good.triggered.connect(self.edit_good)
@@ -35,6 +41,9 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         self.delete_oth_cost.triggered.connect(self.delete_oth_cost_func)
         self.action_4.triggered.connect(self.delete_0_balance_func)
         self.delete_sell.triggered.connect(self.delete_pre_sell_func)
+
+        self.save_table.triggered.connect(self.export_table)
+
 
     def get_message(self, oper):
         if oper == 1:
@@ -290,7 +299,7 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
             self.get_noneditable_table(query_path, header_list, data, 'good_by_batch')
 
     def show_batches_table(self):
-        self.get_editable_table([1], 'batch', '0', 'delete_batch_sum')
+        self.get_editable_table([1], 'batch', 'batch', 'delete_batch_sum')
 
     def show_profit_table(self):
         name = 'Cумма'
@@ -336,6 +345,12 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
                        '9-12мес(80см)', '12-18мес(86см)', '18-24мес(92см)', '24-36мес(98см)']
         oper = 'show_size'
         self.get_noneditable_table(query, header_list, art, oper)
+
+    def show_all_sizes_table(self):
+        query = QUERY_PATHES['get_all_sizes']
+        header_list = ['Артикул', 'Наименование', '0-1мес(56см)', '1-3мес(62см)', '3-6мес(68см)', '6-9мес(74см)',
+                       '9-12мес(80см)', '12-18мес(86см)', '18-24мес(92см)', '24-36мес(98см)']
+        self.get_noneditable_table(query, header_list)
 
     def edit_good(self, data=None):
         edit_dialog = EditGoodDialog2()
@@ -477,3 +492,59 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         if not rez:
             self.get_message(1)
             return
+
+    # def export_table(self):
+    #     rows = self.tableView.model()
+    #     if not rows:
+    #         msg = QMessageBox.information(self, 'Внимание', 'Нечего сохранять.')
+    #         return
+    #
+    #     path, _ = QFileDialog.getSaveFileName(self, 'Save Excel', '.', 'Excel(*.xlsx)')
+    #     if not path:
+    #         msg = QMessageBox.information(self, 'Внимание', 'Не указан файл для сохранения.')
+    #         return
+    #
+    #     columnHeaders = []
+    #     # columnHeaders = self.tableView.horizontalHeader()
+    #
+    #     # создать список заголовков столбцов
+    #     # for j in range(self.tableView.model().columnCount()):
+    #     #     columnHeaders.append(self.tableView.horizontalHeaderItem(j).text())
+    #     for header in range(self.tableView.model().columnCount()):
+    #         columnHeaders.append(self.tableView.model().headerData(header, Qt.Horizontal))
+    #
+    #     df = pd.DataFrame(columns=columnHeaders)
+    #
+    #     # создать набор записей объекта dataframe
+    #     for row in range(self.tableView.model().rowCount()):
+    #         for col in range(self.tableView.model().columnCount()):
+    #             table_idx = self.tableView.model().index(row, col)
+    #             df.at[row, columnHeaders[col]] = self.tableView.model().data(table_idx)
+    #             # df.at[row, columnHeaders[col]] = self.tableView.model().item(row, col).text()
+    #
+    #     df.to_excel(path, index=False)
+    #     msg = QMessageBox.information(self, 'Ok', 'Excel file exported.')
+
+    def export_table(self):
+        path, ok = QtWidgets.QFileDialog.getSaveFileName(
+            self, 'Save CSV', '', 'CSV(*.csv)')
+        if ok:
+            columns = range(self.tableView.model().columnCount())
+            headers = [self.tableView.model().headerData(header, Qt.Horizontal) for header in columns]
+            with open(path, 'w') as csvfile:
+                writer = csv.writer(
+                    csvfile, dialect='excel', lineterminator='\n')
+                writer.writerow(headers)
+                for row in range(self.tableView.model().rowCount()):
+                    row_data = []
+                    for column in columns:
+                        idx = self.tableView.model().index(row, column)
+                        row_data.append(self.tableView.model().itemData(idx)[0])
+                    writer.writerow(row_data)
+                        # item(row, column).text()
+                        # for column in columns)
+                        # self.tableView.model().item(row, column).text()
+                        # for column in columns)
+
+
+

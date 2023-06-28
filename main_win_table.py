@@ -51,6 +51,8 @@ class MainWinTableTemplate(main_win_template.Ui_MainWindow):
         t_model.setHeaderData(1, Qt.Horizontal, 'Наименование')
         if oper == 'other_costs':
             t_model.setHeaderData(2, Qt.Horizontal, 'Сумма')
+        if oper == 'batch':
+            t_model.setHeaderData(2, Qt.Horizontal, 'Сумма')
         self.tableView.setModel(t_model)
         self.tableView.resizeColumnsToContents()
 

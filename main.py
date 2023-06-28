@@ -26,4 +26,5 @@ def main():
 
 if __name__ == '__main__':
     main()
-# pyinstaller main.spec
+# pyinstaller main.spec запаковка в exe
+#pyuic5 main.ui -o main_win_template.py преобразование

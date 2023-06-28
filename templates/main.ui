@@ -40,6 +40,7 @@
      <addaction name="balance_by_bacth"/>
      <addaction name="all_balance"/>
      <addaction name="size_by_cloth"/>
+     <addaction name="action_5"/>
     </widget>
     <addaction name="show_othercosts"/>
     <addaction name="menu_3"/>
@@ -80,11 +81,18 @@
     <addaction name="action"/>
     <addaction name="action_2"/>
    </widget>
+   <widget class="QMenu" name="menu_7">
+    <property name="title">
+     <string>Таблица</string>
+    </property>
+    <addaction name="save_table"/>
+   </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
    <addaction name="menu_5"/>
    <addaction name="menu_6"/>
    <addaction name="menu_4"/>
+   <addaction name="menu_7"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="show_nomenclature">
@@ -240,6 +248,16 @@
   <action name="add_sell_pl">
    <property name="text">
     <string>Место продажи</string>
+   </property>
+  </action>
+  <action name="action_5">
+   <property name="text">
+    <string>Размеры по всем товарам</string>
+   </property>
+  </action>
+  <action name="save_table">
+   <property name="text">
+    <string>Экспорт таблицы в Excel</string>
    </property>
   </action>
  </widget>
