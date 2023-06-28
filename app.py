@@ -10,7 +10,6 @@ from data_base import DB
 from main_win_table import MainWinTableTemplate
 from queres import QUERY_PATHES, ADD_QUERES, UPDATE_QUERES, DELETE_QUERES
 
-import pandas as pd
 import sys, csv
 
 class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
@@ -533,7 +532,7 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
             headers = [self.tableView.model().headerData(header, Qt.Horizontal) for header in columns]
             with open(path, 'w') as csvfile:
                 writer = csv.writer(
-                    csvfile, dialect='excel', lineterminator='\n')
+                    csvfile, delimiter=';', dialect='excel', lineterminator='\n')
                 writer.writerow(headers)
                 for row in range(self.tableView.model().rowCount()):
                     row_data = []
