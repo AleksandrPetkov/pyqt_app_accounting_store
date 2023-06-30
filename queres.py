@@ -131,7 +131,7 @@ QUERY_PATHES = {
     'get_size_by_good': '''SELECT * FROM size WHERE good_id = (?)''',
     'get_income_by_date': '''SELECT note_num, good_id, good_n, size, buy_p, sell_p, order_value, discount, cash, 
                              income, date FROM income_table WHERE date BETWEEN (?) and (?)
-                             UNION SELECT 'Сумма закупки товара' AS note_num, '' AS good_id, '' AS good_n,
+                             UNION SELECT 'Сумма' AS note_num, '' AS good_id, '' AS good_n,
                              '' AS size, '' AS buy_p, '' AS sell_p, '' AS order_value, '' AS discount, SUM(cash) AS cash,
                              SUM(income) AS income, '' AS date FROM income_table WHERE date BETWEEN (?) and (?) ORDER BY note_num''',
     'get_all_sizes': '''SELECT * FROM size''',

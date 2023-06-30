@@ -1,8 +1,10 @@
 import os
+import time
+from datetime import datetime
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMessageBox, QFileDialog
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QLineEdit
 
 from dialoges import AddBatchOthercostsSellDialog, AddGoodDialog, \
     SearchDialog, AddSellDialog, SearchDateDialog, EditGoodDialog2
@@ -11,6 +13,7 @@ from main_win_table import MainWinTableTemplate
 from queres import QUERY_PATHES, ADD_QUERES, UPDATE_QUERES, DELETE_QUERES
 
 import sys, csv
+
 
 class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
     def __init__(self):
@@ -42,7 +45,6 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
         self.delete_sell.triggered.connect(self.delete_pre_sell_func)
 
         self.save_table.triggered.connect(self.export_table)
-
 
     def get_message(self, oper):
         if oper == 1:
@@ -106,42 +108,31 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
             return
 
     def add_pre_sell_func(self, data=None):
-        input_dialog = AddSellDialog(data)
+        input_dialog = AddSellDialog()
         rez = input_dialog.exec()
 
-        num = input_dialog.line_add_num.text()
-        art = input_dialog.line_add_art.currentText().split()[0]
-        size = input_dialog.line_size.currentText()
-        sell_p = self.get_data_with_param(QUERY_PATHES['get_current_good'], art)[0][5]
-        val = input_dialog.line_add_val.text()
-        discount = input_dialog.line_discount.text()
-        place_id = input_dialog.line_sell_place.currentText()
-        date = input_dialog.line_date.date().toPyDate()
-
-        check_art = input_dialog.line_add_art.currentIndex()
-        check_size = input_dialog.line_size.currentIndex()
-        check_place = input_dialog.line_sell_place.currentIndex()
-        check_date = input_dialog.line_date.date()
-        data_check = (num, check_art, check_size, val, discount, check_place, check_date)
-
         if not rez:
-            self.get_message(1)
-            return
-
-        if not num or not art or not val:
-            self.get_message(2)
-            self.add_pre_sell_func(data_check)
-            return
+            return self.get_message(1)
 
         if rez:
-            size_dict_2 = {
-                '0-1мес(56см)': 'get_first', '1-3мес(62см)': 'get_second',
-                '3-6мес(68см)': 'get_third', '6-9мес(74см)': 'get_fourth',
-                '9-12мес(80см)': 'get_fifth', '12-18мес(86см)': 'get_sixth',
-                '18-24мес(92см)': 'get_seventh', '24-36мес(98см)': 'get_eighth'
-            }
-            size_balance = self.get_data_with_param(QUERY_PATHES[size_dict_2[size]], art)[0][0]
-            if size_balance >= int(val):
+            lineedit_items = [lineEdit.text() for lineEdit in input_dialog.findChildren(QtWidgets.QLineEdit)]
+            num = lineedit_items[0]
+            date_l = [dateEdit.date() for dateEdit in input_dialog.findChildren(QtWidgets.QDateEdit)]
+            date = date_l[0].toPyDate()
+            discount_list = lineedit_items[2::2]
+            val_list = lineedit_items[3::2]
+            combobox_items = [comboBox.currentText() for comboBox in input_dialog.findChildren(QtWidgets.QComboBox)]
+            place_id = combobox_items[0]
+            art_list = [e.split()[0] for e in combobox_items[1::2]]
+            size_list = combobox_items[2::2]
+            count = input_dialog.click_count
+
+            for count_num in range(count-3):
+                val = val_list[count_num]
+                art = art_list[count_num]
+                size = size_list[count_num]
+                discount = discount_list[count_num]
+                sell_p = self.get_data_with_param(QUERY_PATHES['get_current_good'], art)[0][5]
                 func = self.get_data_list(QUERY_PATHES['get_note_num'])
                 size_dict = {
                     '0-1мес(56см)': 'update_first_sell', '1-3мес(62см)': 'update_second_sell',
@@ -162,12 +153,7 @@ class AppShop(QtWidgets.QMainWindow, MainWinTableTemplate, DB):
                 self.ins_del_upd_data(query, data)
                 quere_1 = ADD_QUERES['add_sell']
                 self.ins_del_upd_data(quere_1, (val, art))
-                self.get_message(3)
-                return
-            else:
-                self.get_message(4)
-                self.add_pre_sell_func(data_check)
-                return
+            return self.get_message(3)
 
     def add_good_func(self, data_1=None):
         input_dialog = AddGoodDialog(data_1)

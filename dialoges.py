@@ -1,11 +1,115 @@
 import datetime
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QLineEdit, QDialog, QFormLayout, QDialogButtonBox, QVBoxLayout, QComboBox, QSpinBox, \
-    QDateEdit
+    QDateEdit, QGridLayout, QHBoxLayout, QLabel, QPushButton
 
 from data_base import DB
 from queres import QUERY_PATHES
 from validators import int_valid
+
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class AddSellDialog(QDialog):
+    def __init__(self, data=None):
+        super().__init__()
+        self.click_count = 3
+
+        self.art = ''
+        self.size = ''
+
+        self.main_layout = QGridLayout()
+        self.setLayout(self.main_layout)
+        self.db = DB()
+        self.validator = int_valid()
+        self.title = 'Накладная по продаже'
+        self.setWindowTitle(self.title)
+        self.resize(594, 130)
+
+        button_add_good = QPushButton('Добавить товар')
+        self.main_layout.addWidget(button_add_good, 0, 3)
+        button_add_good.setEnabled(False)
+        self.main_layout.addWidget(QLabel('Скидка:'), 2, 3, alignment=Qt.AlignmentFlag.AlignTop)
+
+        button_confirm_note = QPushButton('Подтвердить накладную')
+        self.main_layout.addWidget(button_confirm_note, 0, 4)
+        button_confirm_note.setEnabled(False)
+
+        self.main_layout.addWidget(QLabel('4 посл. цифры накладной'), 0, 0)
+        self.line_add_num = QLineEdit()
+
+        self.main_layout.addWidget(self.line_add_num, 1, 0)
+        self.main_layout.addWidget(QLabel('Товар:'), 2, 0, alignment=Qt.AlignmentFlag.AlignTop)
+        self.line_add_num.textChanged.connect(lambda text: button_add_good.setEnabled(bool(text)))
+
+        self.main_layout.addWidget(QLabel('Где продано:'), 0, 1)
+        self.line_sell_place = QtWidgets.QComboBox()
+        path = QUERY_PATHES['get_place_names']
+        list_as = self.db.get_data_list(path)
+        for _ in list_as:
+            self.line_sell_place.addItem(_)
+        self.main_layout.addWidget(self.line_sell_place, 1, 1)
+        self.main_layout.addWidget(QLabel('Размер:'), 2, 1, alignment=Qt.AlignmentFlag.AlignTop)
+
+        self.main_layout.addWidget(QLabel('Дата продажи:'), 0, 2)
+        now = datetime.datetime.now()
+        self.line_date = QDateEdit(now)
+        self.main_layout.addWidget(self.line_date, 1, 2)
+        self.main_layout.addWidget(QLabel('Количество:'), 2, 2, alignment=Qt.AlignmentFlag.AlignTop)
+
+        def add_good_form():
+            button_confirm_note.setEnabled(False)
+            button_add_good.setEnabled(False)
+
+            self.line_add_art = QComboBox()
+            func = self.db.get_good_id_name_list()
+            self.line_add_art.addItem('-----')
+            for _ in func:
+                self.line_add_art.addItem(str(_))
+            self.line_add_art.activated[str].connect(add_size_form)
+            self.main_layout.addWidget(self.line_add_art, self.click_count+1, 0, alignment=Qt.AlignmentFlag.AlignTop)
+
+            self.line_size = QComboBox()
+            self.line_size.addItem('-----')
+            size_list = ['0-1мес(56см)', '1-3мес(62см)', '3-6мес(68см)', '6-9мес(74см)', '9-12мес(80см)',
+                         '12-18мес(86см)',
+                         '18-24мес(92см)', '24-36мес(98см)']
+            for _ in size_list:
+                self.line_size.addItem(_)
+            self.line_size.activated[str].connect(add_val_form)
+            self.main_layout.addWidget(self.line_size, self.click_count + 1, 1, alignment=Qt.AlignmentFlag.AlignTop)
+
+            self.line_discount = QLineEdit()
+            self.line_discount.setText('0')
+            self.line_discount.setValidator(self.validator)
+            self.main_layout.addWidget(self.line_discount, self.click_count+1, 3, alignment=Qt.AlignmentFlag.AlignTop)
+            self.click_count += 1
+
+        def add_size_form(arg):
+                self.art = arg.split()[0]
+
+        def add_val_form(arg):
+            self.size = arg
+            self.line_add_val = QSpinBox()
+            if self.art != '-----' and self.size != '-----':
+                size_dict_2 = {
+                                '0-1мес(56см)': 'get_first', '1-3мес(62см)': 'get_second',
+                                '3-6мес(68см)': 'get_third', '6-9мес(74см)': 'get_fourth',
+                                '9-12мес(80см)': 'get_fifth', '12-18мес(86см)': 'get_sixth',
+                                '18-24мес(92см)': 'get_seventh', '24-36мес(98см)': 'get_eighth'
+                            }
+
+                size_balance = self.db.get_data_with_param(QUERY_PATHES[size_dict_2[self.size]], self.art)[0][0]
+                self.line_add_val.setMaximum(size_balance)
+            self.main_layout.addWidget(self.line_add_val, self.click_count, 2, alignment=Qt.AlignmentFlag.AlignTop)
+
+            self.line_add_val.textChanged.connect(lambda text: button_confirm_note.setEnabled(bool(text)))
+            self.line_add_val.textChanged.connect(lambda text: button_add_good.setEnabled(bool(text)))
+
+        button_add_good.clicked.connect(add_good_form)
+        button_confirm_note.clicked.connect(self.accept)
 
 
 class BaseDialog(QDialog):
@@ -39,61 +143,6 @@ class AddBatchOthercostsSellDialog(BaseDialog):
         self.form_layout.addRow(self.line_1, self.line_add_name)
         if oper != 'add_batch' and oper != 'add_sell_place':
             self.form_layout.addRow(self.line_2, self.line_add_money)
-
-        self.main_layout.addLayout(self.form_layout)
-        self.main_layout.addWidget(self.button_box)
-        self.setLayout(self.main_layout)
-
-
-class AddSellDialog(BaseDialog):
-    def __init__(self, data=None):
-        super().__init__()
-        self.validator = int_valid()
-        self.title = 'Добавление продажи'
-        self.setWindowTitle(self.title)
-
-        self.line_add_num = QLineEdit()
-        self.line_add_num.setValidator(self.validator)
-        self.line_add_art = QComboBox()
-        func = self.db.get_good_id_name_list()
-        for _ in func:
-            self.line_add_art.addItem(str(_))
-
-        self.line_size = QComboBox()
-        size_list = ['0-1мес(56см)', '1-3мес(62см)', '3-6мес(68см)', '6-9мес(74см)', '9-12мес(80см)', '12-18мес(86см)',
-                     '18-24мес(92см)', '24-36мес(98см)']
-        for _ in size_list:
-            self.line_size.addItem(_)
-        self.line_add_val = QLineEdit()
-        self.line_add_val.setValidator(self.validator)
-        self.line_discount = QLineEdit()
-        self.line_discount.setText('0')
-        self.line_discount.setValidator(self.validator)
-        self.line_sell_place = QComboBox()
-        path = QUERY_PATHES['get_place_names']
-        list_as = self.db.get_data_list(path)
-        for _ in list_as:
-            self.line_sell_place.addItem(_)
-        now = datetime.datetime.now()
-        self.line_date = QDateEdit(now)
-
-        if data:
-            note_num, good_id, size, value, disc, sell_pl, date = data
-            self.line_add_num.setText(note_num)
-            self.line_add_art.setCurrentIndex(good_id)
-            self.line_size.setCurrentIndex(size)
-            self.line_add_val.setText(value)
-            self.line_discount.setText(disc)
-            self.line_sell_place.setCurrentIndex(sell_pl)
-            self.line_date.setDate(date)
-
-        self.form_layout.addRow('4 посл. цифры накладной', self.line_add_num)
-        self.form_layout.addRow('Артикул товара:', self.line_add_art)
-        self.form_layout.addRow('Размер', self.line_size)
-        self.form_layout.addRow('Количество:', self.line_add_val)
-        self.form_layout.addRow('Скидка:', self.line_discount)
-        self.form_layout.addRow('Где продано:', self.line_sell_place)
-        self.form_layout.addRow('Дата продажи:', self.line_date)
 
         self.main_layout.addLayout(self.form_layout)
         self.main_layout.addWidget(self.button_box)
